@@ -1,0 +1,9 @@
+parser: typescript
+env:
+  commonjs: true
+  es6: true
+  node: true
+extends: 'tslint:recommended'
+rules:
+  no-console: off
+  no-cond-assign: off
