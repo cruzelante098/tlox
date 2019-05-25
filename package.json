@@ -14,7 +14,7 @@
     "coverage": "nyc --reporter=text mocha"
   },
   "bin": {
-    "": ""
+    "bin/lox.ts": "lox"
   },
   "husky": {
     "hooks": {
