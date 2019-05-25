@@ -7,11 +7,11 @@ import c from 'chalk';
 let hadError = false;
 
 function main(): void {
-  if (process.argv.length > 2) {
+  if (process.argv.length > 3) {
     console.log("Usage: tlox [script path]");
     process.exit(64);
-  } else if (process.argv.length === 2) {
-    runFile(process.argv[1]);
+  } else if (process.argv.length === 3) {
+    runFile(process.argv[2]);
   } else {
     runPrompt();
   }
@@ -27,6 +27,7 @@ function runFile(path: string): void {
 }
 
 function runPrompt(): void {
+  console.log("TLox REPL");
   for (;;) {
     const input = readlineSync.question("> ");
     run(input);
@@ -48,6 +49,8 @@ export function error(line: number, message: string): void {
 }
 
 function report(line: number, where: string, message: string): void {
-  console.error(c.blue(`[Line ${line}]`) + c.red('Error:') + message);
+  console.error(c.blue(`[Line ${line}]`) + c.red(' Error: ') + message);
   hadError = true;
 }
+
+main();

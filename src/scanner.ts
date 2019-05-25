@@ -117,7 +117,7 @@ export class Scanner {
         } else if (this.isAlpha(c)) {
           this.identifier();
         } else {
-          Lox.error(this.line, `Unexpected character: \`${c}'.`);
+          Lox.error(this.line, `Unexpected character: ${c}`);
         }
     }
   }
