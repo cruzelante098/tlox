@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/cruzelante098/tlox.git"
   },
   "author": "Francisco Cruz <cruzelante098@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/cruzelante098/tlox/issues"
   },
-  "homepage": "",
+  "homepage": "https://github.com/cruzelante098/tlox",
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "chalk": "^2.4.2",
-    "readline-sync": "^1.4.9",
-    "xregexp": "^4.2.4"
+    "readline-sync": "^1.4.9"
   }
 }
