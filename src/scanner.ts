@@ -6,7 +6,7 @@ export class Scanner {
   private readonly source: string;
   private readonly tokens: Token[] = [];
 
-  private readonly Keywords: {[key: string]: TT} = {
+  private readonly keywords: {[key: string]: TT} = {
     "and": TT.AND,
     "class": TT.CLASS,
     "else": TT.ELSE,
@@ -174,7 +174,7 @@ export class Scanner {
   private number(): void {
     while (this.isDigit(this.peek())) this.advance();
 
-    // Look for fractions
+    // Look for decimals
     if (this.peek() === '.' && this.isDigit(this.peekNext())) {
       // Consume the dot
       this.advance();
@@ -193,7 +193,7 @@ export class Scanner {
     while (this.isAlphaNumeric(this.peek())) this.advance();
 
     const lexeme = this.source.substring(this.start, this.current);
-    const type: TT = this.Keywords[lexeme] || TT.IDENTIFIER;
+    const type: TT = this.keywords[lexeme] || TT.IDENTIFIER;
     this.addToken(type);
   }
 
