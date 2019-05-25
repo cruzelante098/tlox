@@ -1,4 +1,4 @@
-export enum TokenType {
+export enum TT {
   // Single-character tokens
   LP = "LP",
   RP = "RP",
