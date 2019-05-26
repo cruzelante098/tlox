@@ -16,3 +16,4 @@ rules:
     - true
     - 'spaces'
     - 2
+  '@typescript-eslint/no-explicit-any': off

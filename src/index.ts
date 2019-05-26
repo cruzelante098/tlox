@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import * as readlineSync from 'readline-sync';
 
 import fs from 'fs';
