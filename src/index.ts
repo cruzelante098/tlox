@@ -1,10 +1,18 @@
-import fs from 'fs';
 import * as readlineSync from 'readline-sync';
-import { Token } from './token';
-import { Scanner } from './scanner';
+
+import fs from 'fs';
 import c from 'chalk';
 
+import { inspect } from 'util';
+
+import { Token } from './token';
+import { Scanner } from './scanner';
+
 let hadError = false;
+
+function ins(x: any): string {
+  return inspect(x, { depth: 30, colors: true, maxArrayLength: 30 });
+}
 
 export function main(args: string[]): void {
   if (args.length > 3) {
@@ -40,7 +48,7 @@ function run(source: string): void {
   const tokens: Token[] = scanner.scanTokens();
 
   for (const token of tokens) {
-    console.log(token);
+    console.log(ins(token.toString()));
   }
 }
 

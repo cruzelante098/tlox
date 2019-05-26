@@ -1,9 +1,18 @@
-parser: typescript
+parser: '@typescript-eslint/parser'
 env:
-  commonjs: true
   es6: true
   node: true
-extends: 'tslint:recommended'
+extends: 
+  - 'plugin:@typescript-eslint/recommended'
+# plugins:
+#   - '@typescript-eslint'
 rules:
   no-console: off
   no-cond-assign: off
+  '@typescript-eslint/no-namespace': off
+  '@typescript-eslint/no-parameter-properties': off
+  '@typescript-eslint/explicit-member-accessibility': off
+  '@typescript-eslint/indent': 
+    - true
+    - 'spaces'
+    - 2

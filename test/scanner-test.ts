@@ -1,8 +1,11 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
+
 import { Scanner } from '../src/scanner';
-import { TokenType } from '../src/token-type';
-import { Token } from '../src/token';
+import { TT } from '../src/token-type';
+import { TokenImpl } from '../src/token';
+
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 describe("Scanner", () => {
   it('recognizes simple operators', () => {
@@ -10,10 +13,10 @@ describe("Scanner", () => {
     const scanner = new Scanner(input);
     const tokens = scanner.scanTokens();
     expect(tokens).to.be.deep.equal([
-      new Token(TokenType.BANG_EQUAL, "!=", null, 1),
-      new Token(TokenType.EQUAL_EQUAL, "==", null, 1),
-      new Token(TokenType.EQUAL, "=", null, 1),
-      new Token(TokenType.EOF, "", null, 1),
+      new TokenImpl(TT.BANG_EQUAL, "!=", null, 1),
+      new TokenImpl(TT.EQUAL_EQUAL, "==", null, 1),
+      new TokenImpl(TT.EQUAL, "=", null, 1),
+      new TokenImpl(TT.EOF, "", null, 1),
     ]);
   });
 });

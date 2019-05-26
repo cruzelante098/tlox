@@ -1,6 +1,14 @@
 import { TT } from "./token-type";
 
-export class Token {
+export interface Token {
+  readonly type: TT;
+  readonly lexeme: string;
+  readonly literal: any;
+  readonly line: number;
+  toString(): string;
+}
+
+export class TokenImpl implements Token {
   readonly type: TT;
   readonly lexeme: string;
   readonly literal: any;

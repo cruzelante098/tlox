@@ -1,5 +1,5 @@
 import * as Lox from './index';
-import { Token } from "./token";
+import { Token, TokenImpl } from "./token";
 import { TT } from "./token-type";
 
 export class Scanner {
@@ -40,7 +40,7 @@ export class Scanner {
       this.scanToken();
     }
 
-    this.tokens.push(new Token(TT.EOF, "", null, this.line));
+    this.tokens.push(new TokenImpl(TT.EOF, "", null, this.line));
     return this.tokens;
   }
 
@@ -133,7 +133,7 @@ export class Scanner {
 
   private addToken(type: TT, literal: any = null): void {
     const text = this.source.substring(this.start, this.current);
-    this.tokens.push(new Token(type, text, literal, this.line));
+    this.tokens.push(new TokenImpl(type, text, literal, this.line));
   }
 
   private match(expected: string): boolean {
