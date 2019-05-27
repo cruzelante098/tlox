@@ -10,23 +10,34 @@ import { TT } from './token-type';
 import { Token } from './token';
 import { RuntimeError } from './runtime-error';
 import * as Lox from './lox';
+import { Stmt } from './statements';
 
 /* eslint-disable @typescript-eslint/prefer-interface */
 type Option = {
   color: boolean;
 };
 
-export class Interpreter implements Expr.Visitor<any> {
+export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   options: Option = { color: false };
 
-  interpret(expression: Expr, options?: Option): string | void {
+  interpret(statements: Stmt[], options?: Option): void {
     if (options) this.options = options;
     try {
-      const value = this.evaluate(expression);
-      return this.stringify(value);
+      for (const stmt of statements) {
+        this.execute(stmt);
+      }
     } catch (e) {
       Lox.reportRuntimeError(e);
     }
+  }
+
+  visitExpressionStmt(stmt: Stmt.Expression): void {
+    this.evaluate(stmt.expression);
+  }
+  
+  visitPrintStmt(stmt: Stmt.Print): void {
+    const value = this.evaluate(stmt.expression);
+    console.log(this.stringify(value));
   }
 
   visitLiteralExpr(expr: Expr.Literal): any {
@@ -93,8 +104,12 @@ export class Interpreter implements Expr.Visitor<any> {
 
     return null;
   }
+  
+  private execute(statement: Stmt): void {
+    statement.accept(this);
+  }
 
-  stringify(obj: any): string {
+  private stringify(obj: any): string {
     if (this.options.color) {
       if (obj === null) return c.yellow('nil');
       return ins(obj);

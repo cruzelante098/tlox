@@ -59,17 +59,13 @@ export function run(source: string): void {
   const tokens: Token[] = scanner.scan(source);
 
   const parser = new Parser();
-  const expression = parser.parse(tokens);
+  const statements = parser.parse(tokens);
 
   if (hadError) return;
 
   /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-  const result = interpreter.interpret(expression!, {
-    color: true,
-  });
-
-  if (result) console.log(result);
+  interpreter.interpret(statements, { color: true });
 }
 
 export function error(line: number, message: string): void {

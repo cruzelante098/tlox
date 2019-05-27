@@ -4,18 +4,39 @@ import { Token } from './token';
 import { Expr } from './expressions';
 import { TT } from './token-type';
 import * as Lox from './lox';
+import { Stmt } from './statements';
 
 export class Parser {
   private tokens: Token[] = [];
   private current = 0;
 
-  parse(tokens: Token[]): Expr | null {
+  parse(tokens: Token[]): Stmt[] {
     this.tokens = tokens;
-    try {
-      return this.expression();
-    } catch (e) {
-      return null;
+
+    const statements: Stmt[] = [];
+
+    while (!this.isAtEnd()) {
+      statements.push(this.statement());
     }
+
+    return statements;
+  }
+
+  private statement(): Stmt {
+    if (this.match(TT.PRINT)) return this.printStatement();
+    return this.expressionStatement();
+  }
+
+  private expressionStatement(): Stmt {
+    const value = this.expression();
+    this.consume(TT.SEMICOLON, "Expected ';' after expression");
+    return new Stmt.Expression(value);
+  }
+
+  private printStatement(): Stmt {
+    const value = this.expression();
+    this.consume(TT.SEMICOLON, "Expected ';' after value");
+    return new Stmt.Print(value);
   }
 
   private expression(): Expr {
