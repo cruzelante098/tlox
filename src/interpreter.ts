@@ -11,6 +11,7 @@ import { Token } from './token';
 import { RuntimeError } from './runtime-error';
 import * as Lox from './lox';
 
+/* eslint-disable @typescript-eslint/prefer-interface */
 type Option = {
   color: boolean;
 };
@@ -78,8 +79,8 @@ export class Interpreter implements Expr.Visitor<any> {
         if (typeof left === 'number' && typeof right === 'number') {
           return (left as number) + (right as number);
         }
-        if (typeof left === 'string' && typeof right === 'string') {
-          return (left as string) + (right as string);
+        if (typeof left === 'string' && (typeof right === 'string' || typeof right === 'number')) {
+          return (left as string) + right.toString();
         }
         throw new RuntimeError(expr.operator, 'Operands must be two numbers or two strings');
       case TT.SLASH:

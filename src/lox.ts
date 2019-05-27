@@ -11,8 +11,6 @@ import { Token } from './token';
 import { Scanner } from './scanner';
 import { TT } from './token-type';
 import { Parser } from './parser';
-import { AstPrinter } from './ast-printer';
-import { Expr } from './expressions';
 import { RuntimeError } from './runtime-error';
 import { Interpreter } from './interpreter';
 
@@ -65,11 +63,13 @@ export function run(source: string): void {
 
   if (hadError) return;
 
-  console.log(
-    interpreter.interpret(expression!, {
-      color: true,
-    }),
-  );
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+  const result = interpreter.interpret(expression!, {
+    color: true,
+  });
+
+  if (result) console.log(result);
 }
 
 export function error(line: number, message: string): void {
@@ -84,7 +84,7 @@ export function errorAtToken({ type, line, lexeme }: Token, message: string): vo
   }
 }
 
-export function reportRuntimeError(error: RuntimeError) {
+export function reportRuntimeError(error: RuntimeError): void {
   console.log(`${filename}:${error.token.line}: ` + c.redBright(error.toString()));
   hadRuntimeError = true;
 }

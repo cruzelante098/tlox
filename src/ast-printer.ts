@@ -1,6 +1,4 @@
 import { Expr } from './expressions';
-import { TokenImpl } from './token';
-import { TT } from './token-type';
 
 export class AstPrinter implements Expr.Visitor<string> {
   print(expr: Expr): string {

@@ -5,6 +5,7 @@
   "scripts": {
     "clean": "rm -rf --verbose out/*",
     "compile": "tsc",
+    "build": "tsc",
     "compile:watch": "tsc --watch",
     "start": "ts-node src/cli.ts",
     "test": "mocha -r ts-node/register test/**/*.ts",
