@@ -1,46 +1,42 @@
-import * as Lox from './index';
-import { Token, TokenImpl } from "./token";
-import { TT } from "./token-type";
+import * as Lox from './lox';
+import { Token, TokenImpl } from './token';
+import { TT } from './token-type';
 
 export class Scanner {
-  private readonly source: string;
+  private source: string = '';
   private readonly tokens: Token[] = [];
 
-  private readonly keywords: {[key: string]: TT} = {
-    "and": TT.AND,
-    "class": TT.CLASS,
-    "else": TT.ELSE,
-    "false": TT.FALSE,
-    "for": TT.FOR,
-    "fun": TT.FUN,
-    "if": TT.IF,
-    "nil": TT.NIL,
-    "or": TT.OR,
-    "print": TT.PRINT,
-    "return": TT.RETURN,
-    "super": TT.SUPER,
-    "this": TT.THIS,
-    "true": TT.TRUE,
-    "let": TT.LET,
-    "while": TT.WHILE,
-  }
+  private readonly keywords: { [key: string]: TT } = {
+    and: TT.AND,
+    class: TT.CLASS,
+    else: TT.ELSE,
+    false: TT.FALSE,
+    for: TT.FOR,
+    fun: TT.FUN,
+    if: TT.IF,
+    nil: TT.NIL,
+    or: TT.OR,
+    print: TT.PRINT,
+    return: TT.RETURN,
+    super: TT.SUPER,
+    this: TT.THIS,
+    true: TT.TRUE,
+    let: TT.LET,
+    while: TT.WHILE,
+  };
 
   private start: number = 0;
   private current: number = 0;
   private line: number = 1;
 
-
-  constructor(source: string) {
+  scan(source: string): Token[] {
     this.source = source;
-  }
-
-  scanTokens(): Token[] {
     while (!this.isAtEnd()) {
       this.start = this.current;
       this.scanToken();
     }
 
-    this.tokens.push(new TokenImpl(TT.EOF, "", null, this.line));
+    this.tokens.push(new TokenImpl(TT.EOF, '', null, this.line));
     return this.tokens;
   }
 
@@ -103,7 +99,7 @@ export class Scanner {
       case ' ':
       case '\r':
       case '\t':
-        // Ignore whitespace.                      
+        // Ignore whitespace.
         break;
       case '\n':
         this.line++;
@@ -155,7 +151,7 @@ export class Scanner {
     }
 
     if (this.isAtEnd()) {
-      Lox.error(this.line, "Unterminated string");
+      Lox.error(this.line, 'Unterminated string');
       return;
     }
 
@@ -180,6 +176,9 @@ export class Scanner {
       this.advance();
       while (this.isDigit(this.peek())) this.advance();
     }
+
+    if (this.isAlpha(this.peek()))
+      Lox.error(this.line, 'Identifiers must not start with numbers');
 
     this.addToken(TT.NUMBER, Number(this.source.substring(this.start, this.current)));
   }

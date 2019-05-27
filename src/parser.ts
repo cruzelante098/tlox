@@ -3,17 +3,14 @@
 import { Token } from './token';
 import { Expr } from './expressions';
 import { TT } from './token-type';
-import * as Lox from './index';
+import * as Lox from './lox';
 
 export class Parser {
-  readonly tokens: Token[] = [];
-  current = 0;
+  private tokens: Token[] = [];
+  private current = 0;
 
-  constructor(tokens: Token[]) {
+  parse(tokens: Token[]): Expr | null {
     this.tokens = tokens;
-  }
-
-  parse(): Expr | null {
     try {
       return this.expression();
     } catch (e) {

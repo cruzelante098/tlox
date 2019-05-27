@@ -1,21 +1,28 @@
 import c from 'chalk';
 import { inspect } from 'util';
 
-function ins(x: any): string {
-  return inspect(x, { depth: 30, colors: true, maxArrayLength: 30 });
+function ins(x: any, colors: boolean = true): string {
+  return inspect(x, { depth: 30, colors, maxArrayLength: 30 });
 }
 
 import { Expr } from './expressions';
 import { TT } from './token-type';
 import { Token } from './token';
 import { RuntimeError } from './runtime-error';
-import * as Lox from './index';
+import * as Lox from './lox';
+
+type Option = {
+  color: boolean;
+};
 
 export class Interpreter implements Expr.Visitor<any> {
-  interpret(expression: Expr): void {
+  options: Option = { color: false };
+
+  interpret(expression: Expr, options?: Option): string | void {
+    if (options) this.options = options;
     try {
       const value = this.evaluate(expression);
-      console.log(this.stringify(value));
+      return this.stringify(value);
     } catch (e) {
       Lox.reportRuntimeError(e);
     }
@@ -87,8 +94,13 @@ export class Interpreter implements Expr.Visitor<any> {
   }
 
   stringify(obj: any): string {
-    if (obj === null) return c.yellow('nil');
-    return ins(obj);
+    if (this.options.color) {
+      if (obj === null) return c.yellow('nil');
+      return ins(obj);
+    } else {
+      if (obj === null) return 'nil';
+      return ins(obj, false);
+    }
   }
 
   private checkNumberOperands(operator: Token, left: any, right: any): void {

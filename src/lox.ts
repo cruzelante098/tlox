@@ -57,15 +57,19 @@ export function runPrompt(): void {
 }
 
 export function run(source: string): void {
-  const scanner: Scanner = new Scanner(source);
-  const tokens: Token[] = scanner.scanTokens();
+  const scanner: Scanner = new Scanner();
+  const tokens: Token[] = scanner.scan(source);
 
-  const parser = new Parser(tokens);
-  const expression = parser.parse();
+  const parser = new Parser();
+  const expression = parser.parse(tokens);
 
   if (hadError) return;
 
-  interpreter.interpret(expression!);
+  console.log(
+    interpreter.interpret(expression!, {
+      color: true,
+    }),
+  );
 }
 
 export function error(line: number, message: string): void {

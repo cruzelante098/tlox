@@ -10,8 +10,8 @@ import { TokenImpl } from '../src/token';
 describe("Scanner", () => {
   it('recognizes simple operators', () => {
     const input = "!= == =";
-    const scanner = new Scanner(input);
-    const tokens = scanner.scanTokens();
+    const scanner = new Scanner();
+    const tokens = scanner.scan(input);
     expect(tokens).to.be.deep.equal([
       new TokenImpl(TT.BANG_EQUAL, "!=", null, 1),
       new TokenImpl(TT.EQUAL_EQUAL, "==", null, 1),
