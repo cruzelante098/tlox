@@ -13,8 +13,14 @@ import { TT } from './token-type';
 import { Parser } from './parser';
 import { AstPrinter } from './ast-printer';
 import { Expr } from './expressions';
+import { RuntimeError } from './runtime-error';
+import { Interpreter } from './interpreter';
 
 let hadError = false;
+let hadRuntimeError = false;
+let filename: string;
+
+const interpreter = new Interpreter();
 
 function ins(x: any): string {
   return inspect(x, { depth: 30, colors: true, maxArrayLength: 30 });
@@ -33,14 +39,15 @@ export function main(args: string[]): void {
 
 export function runFile(path: string): void {
   const file = fs.readFileSync(path, 'utf8');
+  filename = path[2].substring(path[2].lastIndexOf('/') + 1);
   run(file);
 
-  if (hadError) {
-    process.exit(65);
-  }
+  if (hadError) process.exit(65);
+  if (hadRuntimeError) process.exit(70);
 }
 
 export function runPrompt(): void {
+  filename = 'repl';
   console.log('TLox REPL');
   for (;;) {
     const input = readlineSync.question('> ');
@@ -54,28 +61,31 @@ export function run(source: string): void {
   const tokens: Token[] = scanner.scanTokens();
 
   const parser = new Parser(tokens);
-  const expr = parser.parse();
+  const expression = parser.parse();
 
   if (hadError) return;
 
-  console.log(new AstPrinter().print(expr as Expr));
+  interpreter.interpret(expression!);
 }
 
 export function error(line: number, message: string): void {
-  report(line, '', message);
+  reportError(line, 'when scanning', message);
 }
 
-export function errorAtToken(token: Token, message: string): void {
-  if (token.type == TT.EOF) {
-    report(token.line, ' at end', message);
+export function errorAtToken({ type, line, lexeme }: Token, message: string): void {
+  if (type == TT.EOF) {
+    reportError(line, 'at end', message);
   } else {
-    report(token.line, ` at '${token.lexeme}'`, message);
+    reportError(line, `at '${lexeme}'`, message);
   }
 }
 
-export function report(line: number, where: string, message: string): void {
-  console.error(
-    c.blue(`[Line ${line}]`) + c.red(` Error ${where}: `) + message,
-  );
+export function reportRuntimeError(error: RuntimeError) {
+  console.log(`${filename}:${error.token.line}: ` + c.redBright(error.toString()));
+  hadRuntimeError = true;
+}
+
+export function reportError(line: number, where: string, message: string): void {
+  console.error(`${filename}:${line}: ` + c.redBright(`Error ${where}: ${message}`));
   hadError = true;
 }

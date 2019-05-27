@@ -3,17 +3,17 @@ env:
   es6: true
   node: true
 extends: 
-  - 'plugin:@typescript-eslint/recommended'
-# plugins:
-#   - '@typescript-eslint'
+  - plugin:@typescript-eslint/recommended
+plugins:
+  - @typescript-eslint
 rules:
   no-console: off
   no-cond-assign: off
-  '@typescript-eslint/no-namespace': off
-  '@typescript-eslint/no-parameter-properties': off
-  '@typescript-eslint/explicit-member-accessibility': off
-  '@typescript-eslint/indent': 
+  @typescript-eslint/no-namespace: off
+  @typescript-eslint/no-parameter-properties: off
+  @typescript-eslint/explicit-member-accessibility: off
+  @typescript-eslint/indent: 
     - true
-    - 'spaces'
+    - spaces
     - 2
-  '@typescript-eslint/no-explicit-any': off
+  @typescript-eslint/no-explicit-any: off

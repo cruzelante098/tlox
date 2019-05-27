@@ -8,12 +8,13 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${file}",
-            //"preLaunchTask": "npm: compile",
+            "program": "${workspaceFolder}/bin/lox.js",
+            "preLaunchTask": "npm: compile",
             "sourceMaps": true,
             "smartStep": true,
             "internalConsoleOptions": "openOnSessionStart",
-            "outFiles": ["${workspaceFolder}/out/*.js"]
+            "outFiles": ["${workspaceFolder}/out/*.js"],
+            "console": "integratedTerminal",
         }
     ]
 }

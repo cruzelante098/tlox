@@ -167,7 +167,7 @@ export class Parser {
 }
 
 export namespace Parser {
-  export class ParseError {
-
-  }
+  export class ParseError {}
 }
+
+// TODO: add ternary operator

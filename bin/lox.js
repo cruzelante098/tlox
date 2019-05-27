@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { main } from "../src/index";
+const { main } = require("../out/index");
 
 main(process.argv);
