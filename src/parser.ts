@@ -14,9 +14,12 @@ export class Parser {
     this.tokens = tokens;
 
     const statements: Stmt[] = [];
-
-    while (!this.isAtEnd()) {
-      statements.push(this.statement());
+    try {
+      while (!this.isAtEnd()) {
+        statements.push(this.statement());
+      }
+    } catch (e) {
+      
     }
 
     return statements;
