@@ -29,16 +29,16 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
   }
 
+  // ----------
+  // Statements
+  // ----------
+
   visitLetStmt(stmt: Stmt.Let): void {
     let value = null;
     if (stmt.initializer) {
       value = this.evaluate(stmt.initializer);
     }
     this.environment.define(stmt.name.lexeme, value);
-  }
-
-  visitVariableExpr(expr: Expr.Variable): any {
-    return this.environment.get(expr.name);
   }
 
   visitExpressionStmt(stmt: Stmt.Expression): void {
@@ -48,6 +48,20 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   visitPrintStmt(stmt: Stmt.Print): void {
     const value = this.evaluate(stmt.expression);
     console.log(this.stringify(value));
+  }
+
+  // -----------
+  // Expressions
+  // -----------
+
+  visitAssignExpr(expr: Expr.Assign): any {
+    const value = this.evaluate(expr.value);
+    this.environment.assign(expr.name, value);
+    return value;
+  }
+
+  visitVariableExpr(expr: Expr.Variable): any {
+    return this.environment.get(expr.name);
   }
 
   visitLiteralExpr(expr: Expr.Literal): any {

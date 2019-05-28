@@ -66,7 +66,25 @@ export class Parser {
   }
 
   private expression(): Expr {
-    return this.equality();
+    return this.assignment();
+  }
+
+  private assignment(): Expr {
+    const expr = this.equality();
+
+    if (this.match(TT.EQUAL)) {
+      const equals = this.previous();
+      const value = this.assignment();
+
+      if (expr instanceof Expr.Variable) {
+        const name = expr.name;
+        return new Expr.Assign(name, value);
+      }
+
+      ParseError.notify(equals, 'Invalid assignment target');
+    }
+
+    return expr;
   }
 
   private equality(): Expr {
@@ -146,12 +164,12 @@ export class Parser {
       return new Expr.Grouping(expr);
     }
 
-    throw new Parser.ParseError(this.peek(), 'Expected an expression');
+    throw new ParseError(this.peek(), 'Expected an expression');
   }
 
   private consume(type: TT, message: string): Token {
     if (this.check(type)) return this.advance();
-    throw new Parser.ParseError(this.peek(), message);
+    throw new ParseError(this.peek(), message);
   }
 
   private match(...types: TT[]): boolean {
@@ -209,11 +227,13 @@ export class Parser {
   }
 }
 
-export namespace Parser {
-  export class ParseError {
-    constructor(public readonly token: Token, public readonly message: string) {
-      Lox.errorAtToken(token, message);
-    }
+export class ParseError {
+  constructor(public readonly token: Token, public readonly message: string) {
+    ParseError.notify(token, message);
+  }
+
+  static notify(token: Token, message: string): void {
+    Lox.errorAtToken(token, message);
   }
 }
 

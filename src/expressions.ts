@@ -6,7 +6,7 @@ export abstract class Expr {
 
 export namespace Expr {
   export interface Visitor<R> {
-    // visitAssignExpr(expr: Assign): R;
+    visitAssignExpr(expr: Assign): R;
     visitBinaryExpr(expr: Binary): R;
     // visitCallExpr(expr: Call): R;
     // visitGetExpr(expr: Get): R;
@@ -20,15 +20,15 @@ export namespace Expr {
     visitVariableExpr(expr: Variable): R;
   }
 
-  // export class Assign extends Expr {
-  //   constructor(public readonly name: Token, public readonly value: Expr) {
-  //     super();
-  //   }
+  export class Assign extends Expr {
+    constructor(public readonly name: Token, public readonly value: Expr) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitAssignExpr(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitAssignExpr(this);
+    }
+  }
 
   export class Binary extends Expr {
     constructor(
