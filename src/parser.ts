@@ -4,7 +4,7 @@
 import { Token } from './token';
 import { Expr } from './expressions';
 import { TT } from './token-type';
-import * as Lox from './lox';
+import { ParseError } from './errors';
 import { Stmt } from './statements';
 
 export class Parser {
@@ -236,16 +236,6 @@ export class Parser {
 
       this.advance();
     }
-  }
-}
-
-export class ParseError {
-  constructor(public readonly token: Token, public readonly message: string) {
-    ParseError.notify(token, message);
-  }
-
-  static notify(token: Token, message: string): void {
-    Lox.errorAtToken(token, message);
   }
 }
 

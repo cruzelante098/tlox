@@ -3,7 +3,7 @@ import c from 'chalk';
 import { Expr } from './expressions';
 import { TT } from './token-type';
 import { Token } from './token';
-import { RuntimeError } from './runtime-error';
+import { RuntimeError } from './errors';
 import * as Lox from './lox';
 import { Stmt } from './statements';
 import { Environment } from './environment';

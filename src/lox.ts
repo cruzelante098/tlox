@@ -8,7 +8,7 @@ import { Token } from './token';
 import { Scanner } from './scanner';
 import { TT } from './token-type';
 import { Parser } from './parser';
-import { RuntimeError } from './runtime-error';
+import { RuntimeError } from './errors';
 import { Interpreter } from './interpreter';
 
 let hadError = false;
