@@ -10,6 +10,7 @@ import { Environment } from './environment';
 import { ins } from './utils';
 import { LoxCallable } from './lox-callable';
 import { LoxFunction } from './lox-function';
+import { Return } from './return';
 
 /* eslint-disable @typescript-eslint/prefer-interface */
 type Option = {
@@ -54,6 +55,12 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // ----------
   // Statements
   // ----------
+
+  visitReturnStmt(stmt: Stmt.Return): void {
+    let value = null;
+    if (stmt.value) value = this.evaluate(stmt.value);
+    throw new Return(value);
+  }
 
   visitFunctionStmt(stmt: Stmt.Function): void {
     const fun = new LoxFunction(stmt);

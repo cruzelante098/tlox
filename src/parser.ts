@@ -78,9 +78,17 @@ export class Parser {
     if (this.match(TT.IF)) return this.ifStatement();
     else if (this.match(TT.FOR)) return this.forStatement();
     else if (this.match(TT.PRINT)) return this.printStatement();
+    else if (this.match(TT.RETURN)) return this.returnStatement();
     else if (this.match(TT.WHILE)) return this.whileStatement();
     else if (this.match(TT.LBRACE)) return new Stmt.Block(this.block());
     return this.expressionStatement();
+  }
+  
+  private returnStatement(): Stmt {
+    const keyword = this.previous();
+    let value = this.check(TT.SEMICOLON) ? null : this.expression();
+    this.consume(TT.SEMICOLON, "Expected ';' after return value");
+    return new Stmt.Return(keyword, value);
   }
 
   private forStatement(): Stmt {

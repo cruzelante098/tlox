@@ -1,7 +1,0 @@
-let b = 1;
-for (let a = 0; a < 10000; ) {
-  print a;
-  let temp = a;
-  a = b;
-  b = temp + b;
-}

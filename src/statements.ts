@@ -11,7 +11,7 @@ export namespace Stmt {
     visitExpressionStmt(stmt: Expression): R;
     visitIfStmt(stmt: If): R;
     // visitClassStmt(stmt: Class): R;
-    // visitReturnStmt(stmt: Return): R;
+    visitReturnStmt(stmt: Return): R;
     visitWhileStmt(stmt: While): R;
     visitFunctionStmt(stmt: Function): R;
     visitPrintStmt(stmt: Print): R;
@@ -73,18 +73,18 @@ export namespace Stmt {
     }
   }
 
-  // export class Return extends Stmt {
-  //   constructor(
-  //     public readonly keyword: Token,
-  //     public readonly value: Expr,
-  //   ) {
-  //     super();
-  //   }
+  export class Return extends Stmt {
+    constructor(
+      public readonly keyword: Token,
+      public readonly value: Expr | null,
+    ) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitReturnStmt(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitReturnStmt(this);
+    }
+  }
 
   export class Block extends Stmt {
     constructor(public readonly statements: Stmt[]) {
