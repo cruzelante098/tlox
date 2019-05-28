@@ -9,11 +9,11 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/bin/lox.js",
-            "preLaunchTask": "npm: compile",
             "sourceMaps": true,
             "smartStep": true,
             "internalConsoleOptions": "openOnSessionStart",
             "outFiles": ["${workspaceFolder}/lib/*.js"],
+            "args": ["${workspaceFolder}/examples/environments.lox"],
             "console": "integratedTerminal",
         },
         {

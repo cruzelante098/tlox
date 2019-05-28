@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 import fs from 'fs';
+import path from 'path';
 import c from 'chalk';
 
 import { Token } from './token';
@@ -9,7 +10,6 @@ import { TT } from './token-type';
 import { Parser } from './parser';
 import { RuntimeError } from './runtime-error';
 import { Interpreter } from './interpreter';
-import { initRepl } from './repl';
 
 let hadError = false;
 let hadRuntimeError = false;
@@ -17,28 +17,13 @@ let filename = 'repl';
 
 const interpreter = new Interpreter();
 
-export function main(args: string[]): void {
-  if (args.length > 3) {
-    console.log('Usage: tlox [script path]');
-    process.exit(64);
-  } else if (args.length === 3) {
-    runFile(args[2]);
-  } else {
-    runPrompt();
-  }
-}
-
-export function runFile(path: string): void {
-  const file = fs.readFileSync(path, 'utf8');
-  filename = path[2].substring(path[2].lastIndexOf('/') + 1);
+export function runFile(filename: string): void {
+  const file = fs.readFileSync(filename, 'utf8');
+  filename = path.basename(filename);
   run(file);
 
   if (hadError) process.exit(65);
   if (hadRuntimeError) process.exit(70);
-}
-
-export function runPrompt(): void {
-  initRepl();
 }
 
 export function run(source: string): void {
