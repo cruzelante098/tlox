@@ -18,12 +18,17 @@ let filename = 'repl';
 const interpreter = new Interpreter();
 
 export function runFile(filename: string): void {
-  const file = fs.readFileSync(filename, 'utf8');
-  filename = path.basename(filename);
-  run(file);
+  if (fs.existsSync(filename)) {
+    const file = fs.readFileSync(filename, 'utf8');
+    filename = path.basename(filename);
+    run(file);
 
-  if (hadError) process.exit(65);
-  if (hadRuntimeError) process.exit(70);
+    if (hadError) process.exit(65);
+    if (hadRuntimeError) process.exit(70);
+  } else {
+    console.error(c.redBright("File doesn't exists"));
+    process.exit(1);
+  }
 }
 
 export function run(source: string): void {
