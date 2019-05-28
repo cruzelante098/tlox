@@ -8,7 +8,7 @@ export namespace Expr {
   export interface Visitor<R> {
     visitAssignExpr(expr: Assign): R;
     visitBinaryExpr(expr: Binary): R;
-    // visitCallExpr(expr: Call): R;
+    visitCallExpr(expr: Call): R;
     // visitGetExpr(expr: Get): R;
     visitGroupingExpr(expr: Grouping): R;
     visitLiteralExpr(expr: Literal): R;
@@ -44,19 +44,19 @@ export namespace Expr {
     }
   }
 
-  // export class Call extends Expr {
-  //   constructor(
-  //     public readonly callee: Expr,
-  //     public readonly paren: Token,
-  //     public readonly args: Expr[],
-  //   ) {
-  //     super();
-  //   }
+  export class Call extends Expr {
+    constructor(
+      public readonly callee: Expr,
+      public readonly paren: Token,
+      public readonly args: Expr[],
+    ) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitCallExpr(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitCallExpr(this);
+    }
+  }
 
   // export class Get extends Expr {
   //   constructor(public readonly object: Expr, public readonly name: Token) {

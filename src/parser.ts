@@ -246,7 +246,38 @@ export class Parser {
       return new Expr.Unary(operator, right);
     }
 
-    return this.primary();
+    return this.call();
+  }
+
+  private call(): Expr {
+    let expr = this.primary();
+
+    while (true) {
+      if (this.match(TT.LP)) {
+        expr = this.finishCall(expr);
+      } else {
+        break;
+      }
+    }
+
+    return expr;
+  }
+
+  private finishCall(callee: Expr): Expr {
+    const args: Expr[] = [];
+
+    if (!this.check(TT.RP)) {
+      do {
+        if (args.length >= 64) {                          
+          ParseError.notify(this.peek(), "Cannot have more than 64 arguments");
+        }
+        args.push(this.expression());
+      } while (this.match(TT.COMMA));
+    }
+
+    const paren = this.consume(TT.RP, "Expected ')' after arguments");
+
+    return new Expr.Call(callee, paren, args);
   }
 
   private primary(): Expr {
