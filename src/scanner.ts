@@ -96,6 +96,9 @@ export class Scanner {
           this.addToken(TT.SLASH);
         }
         break;
+      case '#':
+        while (this.peek() !== '\n' && !this.isAtEnd()) this.advance();
+        break;
       case ' ':
       case '\r':
       case '\t':
