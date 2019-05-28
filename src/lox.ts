@@ -80,11 +80,11 @@ export function errorAtToken({ type, line, lexeme }: Token, message: string): vo
 }
 
 export function reportRuntimeError(error: RuntimeError): void {
-  console.log(`${filename}:${error.token.line}: ` + c.redBright(error.toString()));
+  console.log(c.redBright(`${error.toString()} (at ${filename}:${error.token.line})`));
   hadRuntimeError = true;
 }
 
 export function reportError(line: number, where: string, message: string): void {
-  console.error(`${filename}:${line}: ` + c.redBright(`Error ${where}: ${message}`));
+  console.error(c.redBright(`Error ${where}: ${message} (at ${filename}:${line})`));
   hadError = true;
 }

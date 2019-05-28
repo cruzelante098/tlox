@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { Token } from './token';
 import { Expr } from './expressions';
@@ -16,13 +17,35 @@ export class Parser {
     const statements: Stmt[] = [];
     try {
       while (!this.isAtEnd()) {
-        statements.push(this.statement());
+        statements.push(this.declaration()!);
       }
     } catch (e) {
       throw e;
     }
 
     return statements;
+  }
+
+  private declaration(): Stmt | null {
+    try {
+      if (this.match(TT.LET)) return this.letDeclaration();
+      return this.statement();
+    } catch (e) {
+      this.synchronize();
+      return null;
+    }
+  }
+
+  private letDeclaration(): Stmt {
+    const name = this.consume(TT.IDENTIFIER, 'Expected variable name');
+    let initializer = null;
+
+    if (this.match(TT.EQUAL)) {
+      initializer = this.expression();
+    }
+
+    this.consume(TT.SEMICOLON, "Expected ';' after variable declaration");
+    return new Stmt.Let(name, initializer);
   }
 
   private statement(): Stmt {
@@ -113,18 +136,22 @@ export class Parser {
       return new Expr.Literal(this.previous().literal);
     }
 
+    if (this.match(TT.IDENTIFIER)) {
+      return new Expr.Variable(this.previous());
+    }
+
     if (this.match(TT.LP)) {
       const expr = this.expression();
       this.consume(TT.RP, "Expected ')' after expression");
       return new Expr.Grouping(expr);
     }
 
-    throw this.error(this.peek(), 'Expected an expression');
+    throw new Parser.ParseError(this.peek(), 'Expected an expression');
   }
 
   private consume(type: TT, message: string): Token {
     if (this.check(type)) return this.advance();
-    throw this.error(this.peek(), message);
+    throw new Parser.ParseError(this.peek(), message);
   }
 
   private match(...types: TT[]): boolean {
@@ -159,11 +186,6 @@ export class Parser {
     return this.tokens[this.current - 1];
   }
 
-  private error(token: Token, message: string): Parser.ParseError {
-    Lox.errorAtToken(token, message);
-    return new Parser.ParseError();
-  }
-
   private synchronize(): void {
     this.advance();
 
@@ -188,7 +210,11 @@ export class Parser {
 }
 
 export namespace Parser {
-  export class ParseError {}
+  export class ParseError {
+    constructor(public readonly token: Token, public readonly message: string) {
+      Lox.errorAtToken(token, message);
+    }
+  }
 }
 
 // TODO: add ternary operator

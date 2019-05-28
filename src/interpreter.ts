@@ -11,6 +11,7 @@ import { Token } from './token';
 import { RuntimeError } from './runtime-error';
 import * as Lox from './lox';
 import { Stmt } from './statements';
+import { Environment } from './environment';
 
 /* eslint-disable @typescript-eslint/prefer-interface */
 type Option = {
@@ -19,6 +20,7 @@ type Option = {
 
 export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   options: Option = { color: false };
+  private environment: Environment = new Environment();
 
   interpret(statements: Stmt[], options?: Option): void {
     if (options) this.options = options;
@@ -31,10 +33,22 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
   }
 
+  visitLetStmt(stmt: Stmt.Let): void {
+    let value = null;
+    if (stmt.initializer) {
+      value = this.evaluate(stmt.initializer);
+    }
+    this.environment.define(stmt.name.lexeme, value);
+  }
+
+  visitVariableExpr(expr: Expr.Variable): any {
+    return this.environment.get(expr.name);
+  }
+
   visitExpressionStmt(stmt: Stmt.Expression): void {
     this.evaluate(stmt.expression);
   }
-  
+
   visitPrintStmt(stmt: Stmt.Print): void {
     const value = this.evaluate(stmt.expression);
     console.log(this.stringify(value));
@@ -104,7 +118,7 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
     return null;
   }
-  
+
   private execute(statement: Stmt): void {
     statement.accept(this);
   }

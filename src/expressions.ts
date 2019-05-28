@@ -17,7 +17,7 @@ export namespace Expr {
     // visitSuperExpr(expr: Super): R;
     // visitThisExpr(expr: This): R;
     visitUnaryExpr(expr: Unary): R;
-    // visitVariableExpr(expr: Variable): R;
+    visitVariableExpr(expr: Variable): R;
   }
 
   // export class Assign extends Expr {
@@ -146,13 +146,13 @@ export namespace Expr {
     }
   }
 
-  // export class Variable extends Expr {
-  //   constructor(public readonly name: Token) {
-  //     super();
-  //   }
+  export class Variable extends Expr {
+    constructor(public readonly name: Token) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitVariableExpr(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitVariableExpr(this);
+    }
+  }
 }
