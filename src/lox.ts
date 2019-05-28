@@ -13,14 +13,14 @@ import { Interpreter } from './interpreter';
 
 let hadError = false;
 let hadRuntimeError = false;
-let filename = 'repl';
+let sourceName = 'repl';
 
 const interpreter = new Interpreter();
 
 export function runFile(filename: string): void {
   if (fs.existsSync(filename)) {
     const file = fs.readFileSync(filename, 'utf8');
-    filename = path.basename(filename);
+    sourceName = path.basename(filename);
     run(file);
 
     if (hadError) process.exit(65);
@@ -60,12 +60,12 @@ export function errorAtToken({ type, line, lexeme }: Token, message: string): vo
 }
 
 export function reportRuntimeError(error: RuntimeError): void {
-  console.log(c.redBright(`${error.toString()} (at ${filename}:${error.token.line})`));
+  console.log(c.redBright(`${error.toString()} (at ${sourceName}:${error.token.line})`));
   hadRuntimeError = true;
 }
 
 export function reportError(line: number, where: string, message: string): void {
-  console.error(c.redBright(`Error ${where}: ${message} (at ${filename}:${line})`));
+  console.error(c.redBright(`Error ${where}: ${message} (at ${sourceName}:${line})`));
   hadError = true;
 }
 

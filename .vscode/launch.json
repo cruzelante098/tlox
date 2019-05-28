@@ -13,7 +13,7 @@
             "smartStep": true,
             "internalConsoleOptions": "openOnSessionStart",
             "outFiles": ["${workspaceFolder}/lib/*.js"],
-            "args": ["${workspaceFolder}/examples/shadowing.lox"],
+            "args": ["${workspaceFolder}/examples/function.lox"],
             "console": "integratedTerminal",
         },
         {

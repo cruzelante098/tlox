@@ -11,6 +11,8 @@ export class Parser {
   private tokens: Token[] = [];
   private current = 0;
 
+  private static readonly MAX_CALLABLE_ARGUMENTS = 64;
+
   parse(tokens: Token[]): Stmt[] {
     this.tokens = tokens;
 
@@ -29,11 +31,35 @@ export class Parser {
   private declaration(): Stmt | null {
     try {
       if (this.match(TT.LET)) return this.letDeclaration();
+      else if (this.match(TT.FUN)) return this.function('function');
       return this.statement();
     } catch (e) {
       this.synchronize();
       return null;
     }
+  }
+
+  private function(kind: 'function' | 'method'): Stmt {
+    const name = this.consume(TT.IDENTIFIER, `Expected ${kind} name`);
+    this.consume(TT.LP, `Expected '(' after ${kind} name`);
+    const parameters: Token[] = [];
+    if (!this.check(TT.RP)) {
+      do {
+        if (parameters.length >= Parser.MAX_CALLABLE_ARGUMENTS) {
+          ParseError.notify(
+            this.peek(),
+            `Cannot have more than ${Parser.MAX_CALLABLE_ARGUMENTS} parameters`,
+          );
+        }
+        
+        parameters.push(this.consume(TT.IDENTIFIER, "Expected parameter name"));
+      } while (this.match(TT.COMMA));
+    }
+
+    this.consume(TT.RP, "Expected ')' after parameters");
+    this.consume(TT.LBRACE, `Expected '{' before ${kind} body`);
+    const body = this.block();
+    return new Stmt.Function(name, parameters, body);
   }
 
   private letDeclaration(): Stmt {
@@ -268,8 +294,11 @@ export class Parser {
 
     if (!this.check(TT.RP)) {
       do {
-        if (args.length >= 64) {                          
-          ParseError.notify(this.peek(), "Cannot have more than 64 arguments");
+        if (args.length >= Parser.MAX_CALLABLE_ARGUMENTS) {
+          ParseError.notify(
+            this.peek(),
+            `Cannot have more than ${Parser.MAX_CALLABLE_ARGUMENTS} arguments`,
+          );
         }
         args.push(this.expression());
       } while (this.match(TT.COMMA));

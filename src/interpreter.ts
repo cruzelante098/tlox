@@ -8,7 +8,8 @@ import * as Lox from './lox';
 import { Stmt } from './statements';
 import { Environment } from './environment';
 import { ins } from './utils';
-import { Callable } from './callable';
+import { LoxCallable } from './lox-callable';
+import { LoxFunction } from './lox-function';
 
 /* eslint-disable @typescript-eslint/prefer-interface */
 type Option = {
@@ -17,19 +18,26 @@ type Option = {
 
 export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   options: Option = { color: false };
-  
+
   readonly globals: Environment = new Environment();
   private environment: Environment = this.globals;
 
   constructor() {
-    this.globals.define("clock", new class implements Callable {
-      readonly arity = 0;
+    this.globals.define(
+      'clock',
+      new (class implements LoxCallable {
+        readonly arity = 0;
 
-      /* eslint-disable @typescript-eslint/no-unused-vars */
-      call(interpreter: Interpreter, args: any[]): any {
-        return new Date().getTime();
-      }
-    })
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        call(interpreter: Interpreter, args: any[]): any {
+          return new Date().getTime();
+        }
+
+        toString(): string {
+          return '<native fn>';
+        }
+      })(),
+    );
   }
 
   interpret(statements: Stmt[], options?: Option): void {
@@ -47,7 +55,10 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // Statements
   // ----------
 
-  // visitFunctionStmt
+  visitFunctionStmt(stmt: Stmt.Function): void {
+    const fun = new LoxFunction(stmt);
+    this.environment.define(stmt.name.lexeme, fun);
+  }
 
   visitIfStmt(stmt: Stmt.If): void {
     if (this.isTruthy(this.evaluate(stmt.condition))) {
@@ -96,11 +107,11 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
       args.push(this.evaluate(arg));
     }
 
-    if (!Callable.isCallable(callee)) {
+    if (!LoxCallable.isCallable(callee)) {
       throw new RuntimeError(expr.paren, 'Can only call functions and classes');
     }
 
-    const fun: Callable = callee as Callable;
+    const fun: LoxCallable = callee as LoxCallable;
 
     if (args.length !== fun.arity) {
       throw new RuntimeError(expr.paren, `Expected ${fun.arity} but got ${args.length}`);
@@ -202,13 +213,8 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   }
 
   private stringify(obj: any): string {
-    if (this.options.color) {
-      if (obj === null) return c.yellow('nil');
-      return typeof obj === 'string' ? obj : ins(obj);
-    } else {
-      if (obj === null) return 'nil';
-      return typeof obj === 'string' ? obj : ins(obj, false);
-    }
+    if (obj === null) return this.options.color ? c.yellow('nil') : 'nil';
+    return typeof obj === 'string' ? obj : ins(obj, this.options.color);
   }
 
   private checkNumberOperands(operator: Token, left: any, right: any): void {
@@ -235,7 +241,7 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     return expr.accept(this);
   }
 
-  private executeBlock(statements: Stmt[], environment: Environment): void {
+  public executeBlock(statements: Stmt[], environment: Environment): void {
     const previous = this.environment;
     try {
       this.environment = environment;

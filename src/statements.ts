@@ -13,7 +13,7 @@ export namespace Stmt {
     // visitClassStmt(stmt: Class): R;
     // visitReturnStmt(stmt: Return): R;
     visitWhileStmt(stmt: While): R;
-    // visitFunctionStmt(stmt: Function): R;
+    visitFunctionStmt(stmt: Function): R;
     visitPrintStmt(stmt: Print): R;
     visitLetStmt(stmt: Let): R;
   }
@@ -32,19 +32,19 @@ export namespace Stmt {
   //   }
   // }
 
-  // export class Function extends Stmt {
-  //   constructor(
-  //     public readonly name: Token,
-  //     public readonly params: Token[],
-  //     public readonly body: Stmt[],
-  //   ) {
-  //     super();
-  //   }
+  export class Function extends Stmt {
+    constructor(
+      public readonly name: Token,
+      public readonly params: Token[],
+      public readonly body: Stmt[],
+    ) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitFunctionStmt(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitFunctionStmt(this);
+    }
+  }
 
   export class If extends Stmt {
     constructor(
