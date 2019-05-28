@@ -5,13 +5,13 @@ import readline from 'readline';
 
 import * as Lox from './lox';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  // completer,
-});
-
 export function initRepl(): void {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    // completer,
+  });
+
   console.log('TLox REPL');
   rl.prompt();
   rl.on('line', line => {
