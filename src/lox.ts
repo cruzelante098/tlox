@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import * as readlineSync from 'readline-sync';
-
 import fs from 'fs';
 import c from 'chalk';
-
-import { inspect } from 'util';
 
 import { Token } from './token';
 import { Scanner } from './scanner';
@@ -13,16 +9,13 @@ import { TT } from './token-type';
 import { Parser } from './parser';
 import { RuntimeError } from './runtime-error';
 import { Interpreter } from './interpreter';
+import { initRepl } from './repl';
 
 let hadError = false;
 let hadRuntimeError = false;
 let filename = 'repl';
 
 const interpreter = new Interpreter();
-
-function ins(x: any): string {
-  return inspect(x, { depth: 30, colors: true, maxArrayLength: 30 });
-}
 
 export function main(args: string[]): void {
   if (args.length > 3) {
@@ -45,12 +38,7 @@ export function runFile(path: string): void {
 }
 
 export function runPrompt(): void {
-  console.log('TLox REPL');
-  for (;;) {
-    const input = readlineSync.question('> ');
-    run(input);
-    hadError = false;
-  }
+  initRepl();
 }
 
 export function run(source: string): void {
@@ -60,7 +48,9 @@ export function run(source: string): void {
   const parser = new Parser();
   const statements = parser.parse(tokens);
 
-  if (hadError) return;
+  if (hadError) {
+    return;
+  }
 
   /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -87,4 +77,8 @@ export function reportRuntimeError(error: RuntimeError): void {
 export function reportError(line: number, where: string, message: string): void {
   console.error(c.redBright(`Error ${where}: ${message} (at ${filename}:${line})`));
   hadError = true;
+}
+
+export function setError(state: boolean): void {
+  hadError = state;
 }

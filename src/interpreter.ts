@@ -1,9 +1,4 @@
 import c from 'chalk';
-import { inspect } from 'util';
-
-function ins(x: any, colors: boolean = true): string {
-  return inspect(x, { depth: 30, colors, maxArrayLength: 30 });
-}
 
 import { Expr } from './expressions';
 import { TT } from './token-type';
@@ -12,6 +7,7 @@ import { RuntimeError } from './runtime-error';
 import * as Lox from './lox';
 import { Stmt } from './statements';
 import { Environment } from './environment';
+import { ins } from './utils';
 
 /* eslint-disable @typescript-eslint/prefer-interface */
 type Option = {
