@@ -50,10 +50,53 @@ export class Parser {
 
   private statement(): Stmt {
     if (this.match(TT.IF)) return this.ifStatement();
+    else if (this.match(TT.FOR)) return this.forStatement();
     else if (this.match(TT.PRINT)) return this.printStatement();
     else if (this.match(TT.WHILE)) return this.whileStatement();
     else if (this.match(TT.LBRACE)) return new Stmt.Block(this.block());
     return this.expressionStatement();
+  }
+
+  private forStatement(): Stmt {
+    this.consume(TT.LP, "Expected '(' after 'for'");
+    let initializer: Stmt | null;
+    if (this.match(TT.SEMICOLON)) {
+      initializer = null;
+    } else if (this.match(TT.LET)) {
+      initializer = this.letDeclaration();
+    } else {
+      initializer = this.expressionStatement();
+    }
+
+    let condition: Expr | null = null;
+    if (!this.check(TT.SEMICOLON)) {
+      condition = this.expression();
+    }
+    this.consume(TT.SEMICOLON, "Expected ';' after loop condition");
+
+    let increment: Expr | null = null;
+    if (!this.check(TT.RP)) {
+      increment = this.expression();
+    }
+    this.consume(TT.RP, "Expected ')' after for clauses");
+
+    let body = this.statement();
+
+    if (increment) {
+      body = new Stmt.Block([body, new Stmt.Expression(increment)]);
+    }
+
+    if (!condition) {
+      condition = new Expr.Literal(true);
+    }
+
+    body = new Stmt.While(condition, body);
+
+    if (initializer) {
+      body = new Stmt.Block([initializer, body]);
+    }
+
+    return body;
   }
 
   private whileStatement(): Stmt {
