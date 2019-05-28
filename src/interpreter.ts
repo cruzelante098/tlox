@@ -33,6 +33,10 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // Statements
   // ----------
 
+  visitBlockStmt(stmt: Stmt.Block): void {
+    this.executeBlock(stmt.statements, new Environment(this.environment));
+  }
+  
   visitLetStmt(stmt: Stmt.Let): void {
     let value = null;
     if (stmt.initializer) {
@@ -173,5 +177,17 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
   private evaluate(expr: Expr): any {
     return expr.accept(this);
+  }
+
+  private executeBlock(statements: Stmt[], environment: Environment): void {
+    const previous = this.environment;
+    try {
+      this.environment = environment;
+      for (const statement of statements) {
+        this.execute(statement);
+      }
+    } finally {
+      this.environment = previous;
+    }
   }
 }

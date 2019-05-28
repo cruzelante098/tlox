@@ -50,7 +50,19 @@ export class Parser {
 
   private statement(): Stmt {
     if (this.match(TT.PRINT)) return this.printStatement();
+    else if (this.match(TT.LBRACE)) return new Stmt.Block(this.block());
     return this.expressionStatement();
+  }
+
+  private block(): Stmt[] {
+    const statements: Stmt[] = [];
+    while (!this.check(TT.RBRACE) && !this.isAtEnd()) {
+      const decl = this.declaration();
+      if (decl) statements.push(decl);
+    }
+
+    this.consume(TT.RBRACE, "Expected '}' after block");
+    return statements;
   }
 
   private expressionStatement(): Stmt {

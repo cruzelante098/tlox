@@ -54,7 +54,7 @@ export class Scanner {
         this.addToken(TT.RP);
         break;
       case '{':
-        this.addToken(TT.RBRACE);
+        this.addToken(TT.LBRACE);
         break;
       case '}':
         this.addToken(TT.RBRACE);
