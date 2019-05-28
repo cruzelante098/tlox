@@ -159,14 +159,6 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
   private isTruthy(obj: any): boolean {
     if (obj === null) return false;
-    if (obj === undefined) {
-      console.error(
-        c.yellow(
-          "Hey! I found out that there's an object that is undefined at truthy evaluation, " +
-            "and that shouldn't happen. I'll return false, but look out for this.",
-        ),
-      );
-    }
     if (typeof obj === 'boolean') return obj as boolean;
     return true;
   }
