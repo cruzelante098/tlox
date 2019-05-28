@@ -41,6 +41,12 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
   }
 
+  visitWhileStmt(stmt: Stmt.While): void {
+    while (this.isTruthy(this.evaluate(stmt.condition))) {
+      this.execute(stmt.body);
+    }
+  }
+
   visitBlockStmt(stmt: Stmt.Block): void {
     this.executeBlock(stmt.statements, new Environment(this.environment));
   }

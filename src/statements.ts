@@ -12,7 +12,7 @@ export namespace Stmt {
     visitIfStmt(stmt: If): R;
     // visitClassStmt(stmt: Class): R;
     // visitReturnStmt(stmt: Return): R;
-    // visitWhileStmt(stmt: While): R;
+    visitWhileStmt(stmt: While): R;
     // visitFunctionStmt(stmt: Function): R;
     visitPrintStmt(stmt: Print): R;
     visitLetStmt(stmt: Let): R;
@@ -60,18 +60,18 @@ export namespace Stmt {
     }
   }
 
-  // export class While extends Stmt {
-  //   constructor(
-  //     public readonly condition: Expr,
-  //     public readonly body: Stmt[],
-  //   ) {
-  //     super();
-  //   }
+  export class While extends Stmt {
+    constructor(
+      public readonly condition: Expr,
+      public readonly body: Stmt,
+    ) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitWhileStmt(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitWhileStmt(this);
+    }
+  }
 
   // export class Return extends Stmt {
   //   constructor(

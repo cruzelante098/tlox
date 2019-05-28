@@ -51,8 +51,18 @@ export class Parser {
   private statement(): Stmt {
     if (this.match(TT.IF)) return this.ifStatement();
     else if (this.match(TT.PRINT)) return this.printStatement();
+    else if (this.match(TT.WHILE)) return this.whileStatement();
     else if (this.match(TT.LBRACE)) return new Stmt.Block(this.block());
     return this.expressionStatement();
+  }
+
+  private whileStatement(): Stmt {
+    this.consume(TT.LP, "Expected '(' after 'while'");
+    const condition = this.expression();
+    this.consume(TT.RP, "Expected ')' after while condition");
+    const body = this.statement();
+
+    return new Stmt.While(condition, body);
   }
 
   private ifStatement(): Stmt {
