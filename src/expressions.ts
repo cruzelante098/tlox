@@ -12,7 +12,7 @@ export namespace Expr {
     // visitGetExpr(expr: Get): R;
     visitGroupingExpr(expr: Grouping): R;
     visitLiteralExpr(expr: Literal): R;
-    // visitLogicalExpr(expr: Logical): R;
+    visitLogicalExpr(expr: Logical): R;
     // visitSetExpr(expr: Set): R;
     // visitSuperExpr(expr: Super): R;
     // visitThisExpr(expr: This): R;
@@ -88,19 +88,19 @@ export namespace Expr {
     }
   }
 
-  // export class Logical extends Expr {
-  //   constructor(
-  //     public readonly left: Expr,
-  //     public readonly operator: Token,
-  //     public readonly right: Expr,
-  //   ) {
-  //     super();
-  //   }
+  export class Logical extends Expr {
+    constructor(
+      public readonly left: Expr,
+      public readonly operator: Token,
+      public readonly right: Expr,
+    ) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitLogicalExpr(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitLogicalExpr(this);
+    }
+  }
 
   // export class Set extends Expr {
   //   constructor(

@@ -33,10 +33,18 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // Statements
   // ----------
 
+  visitIfStmt(stmt: Stmt.If): void {
+    if (this.isTruthy(this.evaluate(stmt.condition))) {
+      this.execute(stmt.thenBranch);
+    } else if (stmt.elseBranch) {
+      this.execute(stmt.thenBranch);
+    }
+  }
+
   visitBlockStmt(stmt: Stmt.Block): void {
     this.executeBlock(stmt.statements, new Environment(this.environment));
   }
-  
+
   visitLetStmt(stmt: Stmt.Let): void {
     let value = null;
     if (stmt.initializer) {
@@ -57,6 +65,19 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // -----------
   // Expressions
   // -----------
+
+  visitLogicalExpr(expr: Expr.Logical): any {
+    const left = this.evaluate(expr.left);
+
+    // short-circuit evaluation
+    if (expr.operator.type === TT.OR) {
+      if (this.isTruthy(left)) return left;
+    } else {
+      if (!this.isTruthy(left)) return left;
+    }
+
+    return this.evaluate(expr.right);
+  }
 
   visitAssignExpr(expr: Expr.Assign): any {
     const value = this.evaluate(expr.value);

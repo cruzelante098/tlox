@@ -49,9 +49,24 @@ export class Parser {
   }
 
   private statement(): Stmt {
-    if (this.match(TT.PRINT)) return this.printStatement();
+    if (this.match(TT.IF)) return this.ifStatement();
+    else if (this.match(TT.PRINT)) return this.printStatement();
     else if (this.match(TT.LBRACE)) return new Stmt.Block(this.block());
     return this.expressionStatement();
+  }
+
+  private ifStatement(): Stmt {
+    this.consume(TT.LP, "Expected '(' after 'if'");
+    const condition = this.expression();
+    this.consume(TT.RP, "Expected ')' after if condition");
+
+    const thenBranch = this.statement();
+    let elseBranch = null;
+    if (this.match(TT.ELSE)) {
+      elseBranch = this.statement();
+    }
+
+    return new Stmt.If(condition, thenBranch, elseBranch);
   }
 
   private block(): Stmt[] {
@@ -82,7 +97,7 @@ export class Parser {
   }
 
   private assignment(): Expr {
-    const expr = this.equality();
+    const expr = this.or();
 
     if (this.match(TT.EQUAL)) {
       const equals = this.previous();
@@ -94,6 +109,30 @@ export class Parser {
       }
 
       ParseError.notify(equals, 'Invalid assignment target');
+    }
+
+    return expr;
+  }
+
+  private or(): Expr {
+    let expr = this.and();
+
+    while (this.match(TT.OR)) {
+      const operator = this.previous();
+      const right = this.and();
+      expr = new Expr.Logical(expr, operator, right);
+    }
+
+    return expr;
+  }
+
+  private and(): Expr {
+    let expr = this.equality();
+
+    while (this.match(TT.AND)) {
+      const operator = this.previous();
+      const right = this.equality();
+      expr = new Expr.Logical(expr, operator, right);
     }
 
     return expr;
