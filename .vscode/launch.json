@@ -13,8 +13,27 @@
             "sourceMaps": true,
             "smartStep": true,
             "internalConsoleOptions": "openOnSessionStart",
-            "outFiles": ["${workspaceFolder}/out/*.js"],
+            "outFiles": ["${workspaceFolder}/lib/*.js"],
             "console": "integratedTerminal",
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha",
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "preLaunchTask": "npm: compile",
+            "args": [
+                "-u", "bdd",
+                "-r", "ts-node/register",
+                "--no-timeouts",
+                "--colors",
+                "--recursive",
+                "--grep", "is capable of parsing a simple expression",
+                "${workspaceFolder}/test/**/*.ts",
+            ],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+            "protocol": "inspector"
+        },
     ]
 }

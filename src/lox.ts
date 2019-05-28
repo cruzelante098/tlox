@@ -16,7 +16,7 @@ import { Interpreter } from './interpreter';
 
 let hadError = false;
 let hadRuntimeError = false;
-let filename: string;
+let filename = 'repl';
 
 const interpreter = new Interpreter();
 
@@ -45,7 +45,6 @@ export function runFile(path: string): void {
 }
 
 export function runPrompt(): void {
-  filename = 'repl';
   console.log('TLox REPL');
   for (;;) {
     const input = readlineSync.question('> ');

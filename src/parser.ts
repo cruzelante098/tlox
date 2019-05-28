@@ -19,7 +19,7 @@ export class Parser {
         statements.push(this.statement());
       }
     } catch (e) {
-      
+      throw e;
     }
 
     return statements;
