@@ -140,10 +140,10 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   private stringify(obj: any): string {
     if (this.options.color) {
       if (obj === null) return c.yellow('nil');
-      return ins(obj);
+      return typeof obj === 'string' ? obj : ins(obj);
     } else {
       if (obj === null) return 'nil';
-      return ins(obj, false);
+      return typeof obj === 'string' ? obj : ins(obj, false);
     }
   }
 
