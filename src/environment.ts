@@ -27,7 +27,6 @@ export class Environment {
     return this.ancestor(distance).values[name];
   }
 
-  /* eslint-disable @typescript-eslint/no-non-null-assertion */
   ancestor(distance: number): Environment {
     let environment: Environment | null = this;
     for (let i = 0; i < distance; i++) {
