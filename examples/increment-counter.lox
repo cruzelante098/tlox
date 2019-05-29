@@ -1,0 +1,18 @@
+fun makeCounter() {
+  let i = 0;
+  fun count() {
+    i = i + 1;
+    return i;
+  }
+
+  return count;
+}
+
+fun incrementCounterTo100(counter) {
+  for(let i = 0; i < 99; i = i + 1) {
+    counter();
+  }
+  print counter();
+}
+
+incrementCounterTo100(makeCounter());
