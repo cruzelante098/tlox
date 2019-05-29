@@ -97,7 +97,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     this.resolve(expr.expression);
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   visitLiteralExpr(expr: Expr.Literal): void {
     // nothing to resolve
   }

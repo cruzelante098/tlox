@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { expect } from 'chai';
 
 import { Scanner } from '../src/scanner';
 import { TT } from '../src/token-type';
 import { Token } from '../src/token';
-
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 describe("Scanner", () => {
   it('recognizes simple operators', () => {

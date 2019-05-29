@@ -12,7 +12,7 @@ import { LoxCallable } from './lox-callable';
 import { LoxFunction } from './lox-function';
 import { Return } from './return';
 
-/* eslint-disable @typescript-eslint/prefer-interface */
+// eslint-disable-next-line @typescript-eslint/prefer-interface
 type Option = {
   color: boolean;
 };
@@ -31,7 +31,7 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
       new (class implements LoxCallable {
         readonly arity = 0;
 
-        /* eslint-disable @typescript-eslint/no-unused-vars */
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         call(interpreter: Interpreter, args: any[]): any {
           return new Date().getTime();
         }
