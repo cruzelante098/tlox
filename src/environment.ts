@@ -20,7 +20,7 @@ export class Environment {
       return this.enclosing.get(name);
     }
 
-    throw new RuntimeError(name, `Undefined variable '${name.lexeme}'`);
+    return undefined;
   }
 
   getAt(distance: number, name: string): any {

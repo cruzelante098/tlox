@@ -14,6 +14,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
 
   constructor(interpreter: Interpreter) {
     this.interpreter = interpreter;
+    this.scopes.push({}); // global scope
   }
 
   // ----------
@@ -156,20 +157,27 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   private resolveLocal(expr: Expr.Variable, name: Token): void {
     for (let i = this.scopes.length - 1; i >= 0; i--) {
       if (name.lexeme in this.scopes[i]) {
-        this.interpreter.resolve(expr, this.scopes.length - 1 - i);
-        return;
+        return this.interpreter.resolve(expr, this.scopes.length - 1 - i);
       }
     }
-    // Not found. Assume it is global.
+    if (this.interpreter.globals.get(name) === undefined) {
+      Lox.error(name, 'Undefined variable');
+    }
   }
 
   private define(name: Token): void {
-    if (this.scopes.length === 0) return;
+    if (this.scopes.length === 0) {
+      throw Error("There's nothing in scopes. That shouln't happen.");
+    }
+
     this.scopes.slice(-1)[0][name.lexeme] = true;
   }
 
   private declare(name: Token): void {
-    if (this.scopes.length === 0) return;
+    if (this.scopes.length === 0) {
+      throw Error("There's nothing in scopes. That shouln't happen.");
+    }
+
     const scope = this.scopes.slice(-1)[0];
 
     if (name.lexeme in scope) {
