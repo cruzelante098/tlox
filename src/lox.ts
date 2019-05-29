@@ -10,6 +10,7 @@ import { TT } from './token-type';
 import { Parser } from './parser';
 import { RuntimeError } from './errors';
 import { Interpreter } from './interpreter';
+import { Resolver } from './resolver';
 
 let hadError = false;
 let hadRuntimeError = false;
@@ -38,24 +39,30 @@ export function run(source: string): void {
   const parser = new Parser();
   const statements = parser.parse(tokens);
 
-  if (hadError) {
-    return;
-  }
+  if (hadError) return;
 
-  /* eslint-disable @typescript-eslint/no-non-null-assertion */
+  new Resolver(interpreter).resolve(statements);
+
+  if (hadError) return; // Stop if there was a resolution error.
 
   interpreter.interpret(statements, { color: true });
 }
 
-export function error(line: number, message: string): void {
-  reportError(line, 'when scanning', message);
-}
+export function error(line: number, message: string): void; // overload 1
+export function error(token: Token, message: string): void; // overload 2
 
-export function errorAtToken({ type, line, lexeme }: Token, message: string): void {
-  if (type == TT.EOF) {
-    reportError(line, 'at end', message);
-  } else {
-    reportError(line, `at '${lexeme}'`, message);
+export function error(obj: Token | number, message: string): void {
+  if (obj instanceof Token) {
+    // overload 1
+    const { type, line, lexeme } = obj as Token;
+    if (type == TT.EOF) {
+      reportError(line, 'at end', message);
+    } else {
+      reportError(line, `at '${lexeme}'`, message);
+    }
+  } else if (typeof obj === 'number') {
+    // overload 2
+    reportError(obj, 'when scanning', message);
   }
 }
 

@@ -8,7 +8,7 @@ export class ParseError extends Error {
   }
 
   static notify(token: Token, message: string): void {
-    Lox.errorAtToken(token, message);
+    Lox.error(token, message);
   }
 }
 

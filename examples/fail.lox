@@ -1,0 +1,6 @@
+{ 
+    fun showA() {
+        print a;
+    }
+    showA();
+}

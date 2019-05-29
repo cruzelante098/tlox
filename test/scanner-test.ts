@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { Scanner } from '../src/scanner';
 import { TT } from '../src/token-type';
-import { TokenImpl } from '../src/token';
+import { Token } from '../src/token';
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
@@ -13,10 +13,10 @@ describe("Scanner", () => {
     const scanner = new Scanner();
     const tokens = scanner.scan(input);
     expect(tokens).to.be.deep.equal([
-      new TokenImpl(TT.BANG_EQUAL, "!=", null, 1),
-      new TokenImpl(TT.EQUAL_EQUAL, "==", null, 1),
-      new TokenImpl(TT.EQUAL, "=", null, 1),
-      new TokenImpl(TT.EOF, "", null, 1),
+      new Token(TT.BANG_EQUAL, "!=", null, 1),
+      new Token(TT.EQUAL_EQUAL, "==", null, 1),
+      new Token(TT.EQUAL, "=", null, 1),
+      new Token(TT.EOF, "", null, 1),
     ]);
   });
 });

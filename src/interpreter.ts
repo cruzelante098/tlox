@@ -21,7 +21,9 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   options: Option = { color: false };
 
   readonly globals: Environment = new Environment();
+
   private environment: Environment = this.globals;
+  private readonly locals: Map<Expr, number> = new Map();
 
   constructor() {
     this.globals.define(
@@ -142,12 +144,20 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
   visitAssignExpr(expr: Expr.Assign): any {
     const value = this.evaluate(expr.value);
+
+    const distance = this.locals.get(expr);
+    if (distance) {
+      this.environment.assignAt(distance, expr.name, value);
+    } else {
+      this.globals.assign(expr.name, value);
+    }
+
     this.environment.assign(expr.name, value);
     return value;
   }
 
   visitVariableExpr(expr: Expr.Variable): any {
-    return this.environment.get(expr.name);
+    return this.lookupVariable(expr.name, expr);
   }
 
   visitLiteralExpr(expr: Expr.Literal): any {
@@ -213,6 +223,19 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
 
     return null;
+  }
+
+  resolve(expr: Expr, depth: number): void {
+    this.locals.set(expr, depth);
+  }
+
+  private lookupVariable(name: Token, expr: Expr): any {
+    const distance = this.locals.get(expr);
+    if (distance !== undefined) {
+      return this.environment.getAt(distance, name.lexeme);
+    } else {
+      return this.globals.get(name);
+    }
   }
 
   private execute(statement: Stmt): void {

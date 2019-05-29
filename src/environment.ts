@@ -23,6 +23,22 @@ export class Environment {
     throw new RuntimeError(name, `Undefined variable '${name.lexeme}'`);
   }
 
+  getAt(distance: number, name: string): any {
+    return this.ancestor(distance).values[name];
+  }
+
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
+  ancestor(distance: number): Environment {
+    let environment: Environment | null = this;
+    for (let i = 0; i < distance; i++) {
+      environment = environment && environment.enclosing;
+    }
+
+    if (!environment) throw new Error('Environment is null');
+
+    return environment;
+  }
+
   assign(name: Token, value: any): void {
     if (name.lexeme in this.values) {
       this.values[name.lexeme] = value;
@@ -31,5 +47,9 @@ export class Environment {
     } else {
       throw new RuntimeError(name, `Undefined variable '${name.lexeme}'`);
     }
+  }
+
+  assignAt(distance: number, name: Token, value: any): void {
+    this.ancestor(distance).values[name.lexeme] = value;
   }
 }
