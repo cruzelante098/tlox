@@ -16,6 +16,7 @@ export class Parser {
 
   parse(tokens: Token[]): Stmt[] {
     this.tokens = tokens;
+    this.current = 0;
 
     const statements: Stmt[] = [];
     try {

@@ -31,8 +31,8 @@ export function runFile(filename: string): void {
 }
 
 export function run(source: string): void {
-  const scanner: Scanner = new Scanner();
-  const tokens: Token[] = scanner.scan(source);
+  const scanner = new Scanner();
+  const tokens = scanner.scan(source);
 
   const parser = new Parser();
   const statements = parser.parse(tokens);
@@ -76,4 +76,8 @@ export function reportError(line: number, where: string, message: string): void 
 
 export function setError(state: boolean): void {
   hadError = state;
+}
+
+export function getError(): boolean {
+  return hadError;
 }

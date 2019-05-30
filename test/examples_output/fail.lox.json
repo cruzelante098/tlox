@@ -1,0 +1,4 @@
+{
+    "test_type": "throws",
+    "reason": "Undefined variable on line 3"
+}

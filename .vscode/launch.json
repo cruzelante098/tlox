@@ -29,7 +29,7 @@
                 "--no-timeouts",
                 "--colors",
                 "--recursive",
-                "--grep", "is capable of parsing a simple expression",
+                // "--grep", "is capable of parsing a simple expression",
                 "${workspaceFolder}/test/**/*.ts",
             ],
             "console": "internalConsole",

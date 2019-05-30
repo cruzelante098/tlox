@@ -4,7 +4,7 @@ import { TT } from './token-type';
 
 export class Scanner {
   private source: string = '';
-  private readonly tokens: Token[] = [];
+  private tokens: Token[] = [];
 
   private readonly keywords: { [key: string]: TT } = {
     and: TT.AND,
@@ -34,7 +34,9 @@ export class Scanner {
   }
 
   scan(source: string): Token[] {
+    this.reset();
     this.source = source;
+
     while (!this.isAtEnd()) {
       this.start = this.current;
       this.scanToken();
@@ -42,6 +44,13 @@ export class Scanner {
 
     this.tokens.push(new Token(TT.EOF, '', null, this.line));
     return this.tokens;
+  }
+
+  private reset(): void {
+    this.tokens = [];
+    this.start = 0;
+    this.current = 0;
+    this.line = 1;
   }
 
   private isAtEnd(): boolean {

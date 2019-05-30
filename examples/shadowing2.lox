@@ -1,0 +1,6 @@
+let a = 1;
+{
+  let b = a;
+  let a = b + 2;
+  print a;
+}
