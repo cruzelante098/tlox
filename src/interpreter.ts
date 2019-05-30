@@ -1,5 +1,3 @@
-import c from 'chalk';
-
 import * as Lox from './lox';
 import { Expr } from './expressions';
 import { TT } from './token-type';
@@ -7,7 +5,6 @@ import { Token } from './token';
 import { RuntimeError } from './errors';
 import { Stmt } from './statements';
 import { Environment } from './environment';
-import { ins } from './utils';
 import { LoxCallable } from './lox-callable';
 import { LoxFunction } from './lox-function';
 import { Return } from './return';
@@ -33,8 +30,7 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
       new (class implements LoxCallable {
         readonly arity = 0;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        call(interpreter: Interpreter, args: any[]): any {
+        call(): any {
           return new Date().getTime();
         }
 

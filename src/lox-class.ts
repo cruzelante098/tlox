@@ -1,5 +1,4 @@
 import { LoxCallable } from './lox-callable';
-import { Interpreter } from './interpreter';
 import { LoxInstance } from './lox-instance';
 import { LoxFunction } from './lox-function';
 
@@ -17,7 +16,7 @@ export class LoxClass implements LoxCallable {
     this.methods = methods;
   }
 
-  call(interpreter: Interpreter, args: any[]): any {
+  call(): any {
     const instance = new LoxInstance(this);
     return instance;
   }
