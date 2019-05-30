@@ -6,7 +6,7 @@ import * as Lox from './lox';
 import { FunctionType } from './lox-function';
 
 type FunctionEnvironment = 'none' | 'function' | 'method' | 'initializer';
-type ClassEnvironment = 'none' | 'class';
+type ClassEnvironment = 'none' | 'class' | 'subclass';
 
 export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   private readonly scopes: Map<string, boolean>[] = [];
@@ -36,6 +36,8 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     }
 
     if (stmt.superclass) {
+      this.currentClass = 'subclass';
+      this.resolve(stmt.superclass);
       this.beginScope();
       this.innerScope().set('super', true);
     }
@@ -118,7 +120,14 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   // -----------
 
   visitSuperExpr(expr: Expr.Super): void {
-    this.resolveLocal(expr, expr.keyword);
+    // TODO: make so if the method doesn't exist in superclass a static error is thrown
+    if (this.currentClass === 'none') {
+      Lox.error(expr.keyword, "Cannot use 'super' outside of a class");
+    } else if (this.currentClass !== 'subclass') {
+      Lox.error(expr.keyword, "Cannot use 'super' in a class with no superclass");
+    } else {
+      this.resolveLocal(expr, expr.keyword);
+    }
   }
 
   visitThisExpr(expr: Expr.This): void {

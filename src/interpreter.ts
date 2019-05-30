@@ -155,7 +155,7 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     const method = superclass.findMethod(expr.method.lexeme);
 
     if (!method) {
-      throw new RuntimeError(expr.method, `Undefined property ${expr.method.lexeme} on superclass`);
+      throw new RuntimeError(expr.method, `Undefined property '${expr.method.lexeme}' on superclass`);
     }
 
     return method.bind(object);
