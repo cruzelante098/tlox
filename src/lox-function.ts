@@ -4,6 +4,8 @@ import { Interpreter } from './interpreter';
 import { Environment } from './environment';
 import { Return } from './return';
 
+export type FunctionType = 'function' | 'method';
+
 export class LoxFunction implements LoxCallable {
   constructor(private readonly declaration: Stmt.Function, private readonly closure: Environment) {}
   readonly arity: number = this.declaration.params.length;
@@ -27,6 +29,6 @@ export class LoxFunction implements LoxCallable {
   }
 
   toString(): string {
-    return `<fn ${this.declaration.name.lexeme} >`;
+    return `<fn ${this.declaration.name.lexeme}>`;
   }
 }

@@ -31,3 +31,5 @@ export function initRepl(): void {
     rl.close();
   });
 }
+
+// TODO: Allow REPL to receive unbalanced separators

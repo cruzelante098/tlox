@@ -1,16 +1,18 @@
 import c from 'chalk';
 
+import * as Lox from './lox';
 import { Expr } from './expressions';
 import { TT } from './token-type';
 import { Token } from './token';
 import { RuntimeError } from './errors';
-import * as Lox from './lox';
 import { Stmt } from './statements';
 import { Environment } from './environment';
 import { ins } from './utils';
 import { LoxCallable } from './lox-callable';
 import { LoxFunction } from './lox-function';
 import { Return } from './return';
+import { LoxClass } from './lox-class';
+import { LoxInstance } from './lox-instance';
 
 // eslint-disable-next-line @typescript-eslint/prefer-interface
 type Option = {
@@ -57,6 +59,20 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // ----------
   // Statements
   // ----------
+
+  visitClassStmt(stmt: Stmt.Class): void {
+    this.environment.define(stmt.name.lexeme, null);
+
+    const methods: { [key: string]: LoxFunction } = {};
+    for (const method of stmt.methods) {
+      const fun = new LoxFunction(method, this.environment);
+      methods[method.name.lexeme] = fun;
+    }
+
+    const klass = new LoxClass(stmt.name.lexeme, methods);
+
+    this.environment.assign(stmt.name, klass);
+  }
 
   visitReturnStmt(stmt: Stmt.Return): void {
     let value = null;
@@ -107,6 +123,27 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // -----------
   // Expressions
   // -----------
+
+  visitSetExpr(expr: Expr.Set): void {
+    const object = this.evaluate(expr.object);
+
+    if (!(object instanceof LoxInstance)) {
+      throw new RuntimeError(expr.name, 'Only instances have fields');
+    }
+
+    const value = this.evaluate(expr.value);
+    object.set(expr.name, value);
+    return value;
+  }
+
+  visitGetExpr(expr: Expr.Get): any {
+    const object = this.evaluate(expr.object);
+    if (object instanceof LoxInstance) {
+      return object.get(expr.name);
+    }
+
+    throw new RuntimeError(expr.name, 'Only instances have properties');
+  }
 
   visitCallExpr(expr: Expr.Call): any {
     const callee = this.evaluate(expr.callee);
@@ -243,8 +280,8 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   }
 
   private stringify(obj: any): string {
-    if (obj === null) return this.options.color ? c.yellow('nil') : 'nil';
-    return typeof obj === 'string' ? obj : ins(obj, this.options.color);
+    if (obj === null) 'nil';
+    return obj.toString();
   }
 
   private checkNumberOperands(operator: Token, left: any, right: any): void {

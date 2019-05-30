@@ -3,14 +3,15 @@ import { Stmt } from './statements';
 import { Interpreter } from './interpreter';
 import { Token } from './token';
 import * as Lox from './lox';
+import { FunctionType } from './lox-function';
 
-type FunctionType = 'none' | 'function';
+type FunctionEnvironment = 'none' | 'function' | 'method';
 
 export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   private readonly scopes: { [key: string]: boolean }[] = [];
   private readonly interpreter: Interpreter;
 
-  private currentFunction: FunctionType = 'none';
+  private currentFunction: FunctionEnvironment = 'none';
 
   constructor(interpreter: Interpreter) {
     this.interpreter = interpreter;
@@ -20,6 +21,16 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   // ----------
   // Statements
   // ----------
+
+  visitClassStmt(stmt: Stmt.Class): void {
+    this.declare(stmt.name);
+    this.define(stmt.name);
+
+    for (const method of stmt.methods) {       
+      const declaration = 'method'; 
+      this.resolveFunction(method, declaration); 
+    } 
+  }
 
   visitExpressionStmt(stmt: Stmt.Expression): void {
     this.resolve(stmt.expression);
@@ -70,6 +81,15 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   // -----------
   // Expressions
   // -----------
+
+  visitSetExpr(expr: Expr.Set): void {
+    this.resolve(expr.value);
+    this.resolve(expr.object);
+  }
+
+  visitGetExpr(expr: Expr.Get): void {
+    this.resolve(expr.object);
+  }
 
   visitBinaryExpr(expr: Expr.Binary): void {
     this.resolve(expr.left);

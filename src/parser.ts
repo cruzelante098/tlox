@@ -6,6 +6,7 @@ import { Expr } from './expressions';
 import { TT } from './token-type';
 import { ParseError } from './errors';
 import { Stmt } from './statements';
+import { FunctionType } from './lox-function';
 
 export class Parser {
   private tokens: Token[] = [];
@@ -31,6 +32,7 @@ export class Parser {
   private declaration(): Stmt | null {
     try {
       if (this.match(TT.LET)) return this.letDeclaration();
+      else if (this.match(TT.CLASS)) return this.classDeclaration();
       else if (this.match(TT.FUN)) return this.function('function');
       return this.statement();
     } catch (e) {
@@ -39,7 +41,20 @@ export class Parser {
     }
   }
 
-  private function(kind: 'function' | 'method'): Stmt {
+  private classDeclaration(): Stmt.Class {
+    const name = this.consume(TT.IDENTIFIER, 'Expected class name');
+    this.consume(TT.LBRACE, "Expected '{' before class body");
+
+    const methods: Stmt.Function[] = [];
+    while (!this.check(TT.RBRACE) && !this.isAtEnd()) {
+      methods.push(this.function('method'));
+    }
+
+    this.consume(TT.RBRACE, "Expected '}' after class body");
+    return new Stmt.Class(name, null, methods);
+  }
+
+  private function(kind: FunctionType): Stmt.Function {
     const name = this.consume(TT.IDENTIFIER, `Expected ${kind} name`);
     this.consume(TT.LP, `Expected '(' after ${kind} name`);
     const parameters: Token[] = [];
@@ -51,8 +66,8 @@ export class Parser {
             `Cannot have more than ${Parser.MAX_CALLABLE_ARGUMENTS} parameters`,
           );
         }
-        
-        parameters.push(this.consume(TT.IDENTIFIER, "Expected parameter name"));
+
+        parameters.push(this.consume(TT.IDENTIFIER, 'Expected parameter name'));
       } while (this.match(TT.COMMA));
     }
 
@@ -62,7 +77,7 @@ export class Parser {
     return new Stmt.Function(name, parameters, body);
   }
 
-  private letDeclaration(): Stmt {
+  private letDeclaration(): Stmt.Let {
     const name = this.consume(TT.IDENTIFIER, 'Expected variable name');
     let initializer = null;
 
@@ -83,8 +98,8 @@ export class Parser {
     else if (this.match(TT.LBRACE)) return new Stmt.Block(this.block());
     return this.expressionStatement();
   }
-  
-  private returnStatement(): Stmt {
+
+  private returnStatement(): Stmt.Return {
     const keyword = this.previous();
     let value = this.check(TT.SEMICOLON) ? null : this.expression();
     this.consume(TT.SEMICOLON, "Expected ';' after return value");
@@ -133,7 +148,7 @@ export class Parser {
     return body;
   }
 
-  private whileStatement(): Stmt {
+  private whileStatement(): Stmt.While {
     this.consume(TT.LP, "Expected '(' after 'while'");
     const condition = this.expression();
     this.consume(TT.RP, "Expected ')' after while condition");
@@ -142,7 +157,7 @@ export class Parser {
     return new Stmt.While(condition, body);
   }
 
-  private ifStatement(): Stmt {
+  private ifStatement(): Stmt.If {
     this.consume(TT.LP, "Expected '(' after 'if'");
     const condition = this.expression();
     this.consume(TT.RP, "Expected ')' after if condition");
@@ -167,13 +182,13 @@ export class Parser {
     return statements;
   }
 
-  private expressionStatement(): Stmt {
+  private expressionStatement(): Stmt.Expression {
     const value = this.expression();
     this.consume(TT.SEMICOLON, "Expected ';' after expression");
     return new Stmt.Expression(value);
   }
 
-  private printStatement(): Stmt {
+  private printStatement(): Stmt.Print {
     const value = this.expression();
     this.consume(TT.SEMICOLON, "Expected ';' after value");
     return new Stmt.Print(value);
@@ -193,6 +208,9 @@ export class Parser {
       if (expr instanceof Expr.Variable) {
         const name = expr.name;
         return new Expr.Assign(name, value);
+      } else if (expr instanceof Expr.Get) {
+        const get = expr;
+        return new Expr.Set(get.object, get.name, value);
       }
 
       ParseError.notify(equals, 'Invalid assignment target');
@@ -289,6 +307,9 @@ export class Parser {
     while (true) {
       if (this.match(TT.LP)) {
         expr = this.finishCall(expr);
+      } else if (this.match(TT.DOT)) {
+        const name = this.consume(TT.IDENTIFIER, "Expected property name after '.'");
+        expr = new Expr.Get(expr, name);
       } else {
         break;
       }

@@ -10,7 +10,7 @@ export namespace Stmt {
     visitBlockStmt(stmt: Block): R;
     visitExpressionStmt(stmt: Expression): R;
     visitIfStmt(stmt: If): R;
-    // visitClassStmt(stmt: Class): R;
+    visitClassStmt(stmt: Class): R;
     visitReturnStmt(stmt: Return): R;
     visitWhileStmt(stmt: While): R;
     visitFunctionStmt(stmt: Function): R;
@@ -18,19 +18,19 @@ export namespace Stmt {
     visitLetStmt(stmt: Let): R;
   }
 
-  // export class Class extends Stmt {
-  //   constructor(
-  //     public readonly name: Token,
-  //     public readonly superclass: Expr.Variable,
-  //     public readonly methods: Stmt.Function[],
-  //   ) {
-  //     super();
-  //   }
+  export class Class extends Stmt {
+    constructor(
+      public readonly name: Token,
+      public readonly superclass: Expr.Variable | null,
+      public readonly methods: Stmt.Function[],
+    ) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitClassStmt(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitClassStmt(this);
+    }
+  }
 
   export class Function extends Stmt {
     constructor(

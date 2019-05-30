@@ -9,11 +9,11 @@ export namespace Expr {
     visitAssignExpr(expr: Assign): R;
     visitBinaryExpr(expr: Binary): R;
     visitCallExpr(expr: Call): R;
-    // visitGetExpr(expr: Get): R;
+    visitGetExpr(expr: Get): R;
     visitGroupingExpr(expr: Grouping): R;
     visitLiteralExpr(expr: Literal): R;
     visitLogicalExpr(expr: Logical): R;
-    // visitSetExpr(expr: Set): R;
+    visitSetExpr(expr: Set): R;
     // visitSuperExpr(expr: Super): R;
     // visitThisExpr(expr: This): R;
     visitUnaryExpr(expr: Unary): R;
@@ -58,15 +58,15 @@ export namespace Expr {
     }
   }
 
-  // export class Get extends Expr {
-  //   constructor(public readonly object: Expr, public readonly name: Token) {
-  //     super();
-  //   }
+  export class Get extends Expr {
+    constructor(public readonly object: Expr, public readonly name: Token) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitGetExpr(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitGetExpr(this);
+    }
+  }
 
   export class Grouping extends Expr {
     constructor(public readonly expression: Expr) {
@@ -102,19 +102,19 @@ export namespace Expr {
     }
   }
 
-  // export class Set extends Expr {
-  //   constructor(
-  //     public readonly object: Expr,
-  //     public readonly name: Token,
-  //     public readonly value: Expr,
-  //   ) {
-  //     super();
-  //   }
+  export class Set extends Expr {
+    constructor(
+      public readonly object: Expr,
+      public readonly name: Token,
+      public readonly value: Expr,
+    ) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitSetExpr(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitSetExpr(this);
+    }
+  }
 
   // export class Super extends Expr {
   //   constructor(public readonly keyword: Token, public readonly method: Token) {
