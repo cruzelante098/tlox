@@ -2,7 +2,7 @@ import { RuntimeError } from './errors';
 import { Token } from './token';
 
 export class Environment {
-  private readonly values: { [key: string]: any } = Object.create(null);
+  private readonly values: Map<string, any> = new Map();
   private readonly enclosing: Environment | null;
 
   constructor(enclosing?: Environment) {
@@ -10,12 +10,12 @@ export class Environment {
   }
 
   define(name: string, value: any): void {
-    this.values[name] = value;
+    this.values.set(name, value);
   }
 
   get(name: Token): any {
-    if (name.lexeme in this.values) {
-      return this.values[name.lexeme];
+    if (this.values.has(name.lexeme)) {
+      return this.values.get(name.lexeme);
     } else if (this.enclosing) {
       return this.enclosing.get(name);
     }
@@ -24,7 +24,7 @@ export class Environment {
   }
 
   getAt(distance: number, name: string): any {
-    return this.ancestor(distance).values[name];
+    return this.ancestor(distance).values.get(name);
   }
 
   ancestor(distance: number): Environment {
@@ -39,8 +39,8 @@ export class Environment {
   }
 
   assign(name: Token, value: any): void {
-    if (name.lexeme in this.values) {
-      this.values[name.lexeme] = value;
+    if (this.values.has(name.lexeme)) {
+      this.values.set(name.lexeme, value);
     } else if (this.enclosing) {
       this.enclosing.assign(name, value);
     } else {
@@ -49,6 +49,6 @@ export class Environment {
   }
 
   assignAt(distance: number, name: Token, value: any): void {
-    this.ancestor(distance).values[name.lexeme] = value;
+    this.ancestor(distance).values.set(name.lexeme, value);
   }
 }

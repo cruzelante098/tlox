@@ -8,14 +8,14 @@ import { FunctionType } from './lox-function';
 type FunctionEnvironment = 'none' | 'function' | 'method';
 
 export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
-  private readonly scopes: { [key: string]: boolean }[] = [];
+  private readonly scopes: Map<string, boolean>[] = [];
   private readonly interpreter: Interpreter;
 
   private currentFunction: FunctionEnvironment = 'none';
 
   constructor(interpreter: Interpreter) {
     this.interpreter = interpreter;
-    this.scopes.push(Object.create(null)); // global scope
+    this.scopes.push(new Map()); // global scope
   }
 
   // ----------
@@ -26,10 +26,9 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     this.declare(stmt.name);
     this.define(stmt.name);
 
-    for (const method of stmt.methods) {       
-      const declaration = 'method'; 
-      this.resolveFunction(method, declaration); 
-    } 
+    for (const method of stmt.methods) {
+      this.resolveFunction(method, 'method');
+    }
   }
 
   visitExpressionStmt(stmt: Stmt.Expression): void {
@@ -128,7 +127,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   }
 
   visitVariableExpr(expr: Expr.Variable): void {
-    if (this.scopes.length !== 0 && this.scopes.slice(-1)[0][expr.name.lexeme] === false) {
+    if (this.scopes.length !== 0 && this.innerScope().get(expr.name.lexeme) === false) {
       Lox.error(expr.name, 'Cannot read local variable in its own initializer');
     }
     this.resolveLocal(expr, expr.name);
@@ -176,7 +175,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
 
   private resolveLocal(expr: Expr.Variable, name: Token): void {
     for (let i = this.scopes.length - 1; i >= 0; i--) {
-      if (name.lexeme in this.scopes[i]) {
+      if (this.scopes[i].has(name.lexeme)) {
         return this.interpreter.resolve(expr, this.scopes.length - 1 - i);
       }
     }
@@ -190,7 +189,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
       throw Error("There's nothing in scopes. That shouln't happen.");
     }
 
-    this.scopes.slice(-1)[0][name.lexeme] = true;
+    this.innerScope().set(name.lexeme, true);
   }
 
   private declare(name: Token): void {
@@ -198,20 +197,24 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
       throw Error("There's nothing in scopes. That shouln't happen.");
     }
 
-    const scope = this.scopes.slice(-1)[0];
+    const scope = this.innerScope();
 
-    if (name.lexeme in scope) {
+    if (scope.has(name.lexeme)) {
       Lox.error(name, 'Variable with this name already declare in this scope');
     }
 
-    scope[name.lexeme] = false;
+    scope.set(name.lexeme, false);
   }
 
   private beginScope(): void {
-    this.scopes.push(Object.create(null));
+    this.scopes.push(new Map());
   }
 
   private endScope(): void {
     this.scopes.pop();
+  }
+
+  private innerScope(): Map<string, boolean> {
+    return this.scopes[this.scopes.length - 1];
   }
 }
