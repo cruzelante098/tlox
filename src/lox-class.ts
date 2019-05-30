@@ -1,32 +1,37 @@
 import { LoxCallable } from './lox-callable';
 import { LoxInstance } from './lox-instance';
 import { LoxFunction } from './lox-function';
-
-// eslint-disable-next-line @typescript-eslint/prefer-interface
-type MethodMap = { [key: string]: LoxFunction };
+import { Interpreter } from './interpreter';
 
 export class LoxClass implements LoxCallable {
   public readonly name: string;
-  public readonly arity = 0;
 
-  private readonly methods: MethodMap;
+  private readonly methods: Map<string, LoxFunction>;
 
-  constructor(name: string, methods: MethodMap) {
+  constructor(name: string, methods: Map<string, LoxFunction>) {
     this.name = name;
     this.methods = methods;
   }
 
-  call(): any {
+  call(interpreter: Interpreter, args: any[]): any {
     const instance = new LoxInstance(this);
+    const initializer = this.findMethod('init');
+    if (initializer) {
+      initializer.bind(instance).call(interpreter, args);
+    }
     return instance;
   }
 
   findMethod(name: string): LoxFunction | undefined {
-    if (name in this.methods) {
-      return this.methods[name];
-    }
+    return this.methods.get(name);
+  }
 
-    return undefined;
+  get arity(): number {
+    const initializer = this.findMethod('init');
+    if (initializer) {
+      return initializer.arity;
+    }
+    return 0;
   }
 
   toString(): string {

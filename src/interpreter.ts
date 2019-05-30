@@ -60,10 +60,10 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   visitClassStmt(stmt: Stmt.Class): void {
     this.environment.define(stmt.name.lexeme, null);
 
-    const methods: { [key: string]: LoxFunction } = {};
+    const methods: Map<string, LoxFunction> = new Map();
     for (const method of stmt.methods) {
-      const fun = new LoxFunction(method, this.environment);
-      methods[method.name.lexeme] = fun;
+      const fun = new LoxFunction(method, this.environment, method.name.lexeme === 'init');
+      methods.set(method.name.lexeme, fun);
     }
 
     const klass = new LoxClass(stmt.name.lexeme, methods);
@@ -73,12 +73,14 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
   visitReturnStmt(stmt: Stmt.Return): void {
     let value = null;
-    if (stmt.value) value = this.evaluate(stmt.value);
+    if (stmt.value) {
+      value = this.evaluate(stmt.value);
+    }
     throw new Return(value);
   }
 
   visitFunctionStmt(stmt: Stmt.Function): void {
-    const fun = new LoxFunction(stmt, this.environment);
+    const fun = new LoxFunction(stmt, this.environment, false);
     this.environment.define(stmt.name.lexeme, fun);
   }
 
@@ -281,7 +283,9 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   }
 
   private stringify(obj: any): string {
-    if (obj === null) 'nil';
+    if (obj === null) {
+      return 'nil';
+    }
     return obj.toString();
   }
 

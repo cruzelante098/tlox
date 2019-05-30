@@ -1,0 +1,13 @@
+class Person {
+    init(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    to_s() {
+        return this.name + ", age: " + this.age;
+    }
+}
+
+let test_subject = Person("John", 20);
+print test_subject.to_s();

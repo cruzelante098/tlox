@@ -5,7 +5,7 @@ import { Token } from './token';
 import * as Lox from './lox';
 import { FunctionType } from './lox-function';
 
-type FunctionEnvironment = 'none' | 'function' | 'method';
+type FunctionEnvironment = 'none' | 'function' | 'method' | 'initializer';
 type ClassEnvironment = 'none' | 'class';
 
 export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
@@ -34,7 +34,11 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     this.beginScope();
     this.innerScope().set('this', true);
     for (const method of stmt.methods) {
-      this.resolveFunction(method, 'method');
+      let declaration: FunctionType = 'method';
+      if (method.name.lexeme === 'init') {
+        declaration = 'initializer';
+      }
+      this.resolveFunction(method, declaration);
     }
     this.endScope();
 
@@ -48,18 +52,27 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   visitIfStmt(stmt: Stmt.If): void {
     this.resolve(stmt.condition);
     this.resolve(stmt.thenBranch);
-    if (stmt.elseBranch) this.resolve(stmt.elseBranch);
+    if (stmt.elseBranch) {
+      this.resolve(stmt.elseBranch);
+    }
   }
 
   visitPrintStmt(stmt: Stmt.Print): void {
-    if (stmt.expression) this.resolve(stmt.expression);
+    if (stmt.expression) {
+      this.resolve(stmt.expression);
+    }
   }
 
   visitReturnStmt(stmt: Stmt.Return): void {
-    if (this.currentFunction === 'none')
+    if (this.currentFunction === 'none') {
       Lox.error(stmt.keyword, 'Cannot return from top-level code');
-
-    if (stmt.value) this.resolve(stmt.value);
+    }
+    if (stmt.value) {
+      if (this.currentFunction === 'initializer') {
+        Lox.error(stmt.keyword, 'Cannot return a value from an initializer');
+      }
+      this.resolve(stmt.value);
+    }
   }
 
   visitWhileStmt(stmt: Stmt.While): void {

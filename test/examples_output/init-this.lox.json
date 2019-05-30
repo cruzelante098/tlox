@@ -1,0 +1,4 @@
+{
+  "test_type": "throws",
+  "reason": "Cannot return a value from a class constructor"
+}
