@@ -6,12 +6,14 @@ import * as Lox from './lox';
 import { FunctionType } from './lox-function';
 
 type FunctionEnvironment = 'none' | 'function' | 'method';
+type ClassEnvironment = 'none' | 'class';
 
 export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   private readonly scopes: Map<string, boolean>[] = [];
   private readonly interpreter: Interpreter;
 
   private currentFunction: FunctionEnvironment = 'none';
+  private currentClass: ClassEnvironment = 'none';
 
   constructor(interpreter: Interpreter) {
     this.interpreter = interpreter;
@@ -23,15 +25,20 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   // ----------
 
   visitClassStmt(stmt: Stmt.Class): void {
+    const enclosingClass = this.currentClass;
+    this.currentClass = 'class';
+
     this.declare(stmt.name);
     this.define(stmt.name);
 
     this.beginScope();
-    this.innerScope().set("this", true);
+    this.innerScope().set('this', true);
     for (const method of stmt.methods) {
       this.resolveFunction(method, 'method');
     }
     this.endScope();
+
+    this.currentClass = enclosingClass;
   }
 
   visitExpressionStmt(stmt: Stmt.Expression): void {
@@ -85,7 +92,11 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   // -----------
 
   visitThisExpr(expr: Expr.This): void {
-    this.resolveLocal(expr, expr.keyword);
+    if (this.currentClass === 'none') {
+      Lox.error(expr.keyword, "Cannot use 'this' outside of a class");
+    } else {
+      this.resolveLocal(expr, expr.keyword);
+    }
   }
 
   visitSetExpr(expr: Expr.Set): void {
