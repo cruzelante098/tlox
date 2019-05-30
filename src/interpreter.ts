@@ -58,7 +58,20 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // ----------
 
   visitClassStmt(stmt: Stmt.Class): void {
+    let superclass = null;
+    if (stmt.superclass) {
+      superclass = this.evaluate(stmt.superclass);
+      if (!(superclass instanceof LoxClass)) {
+        throw new RuntimeError(stmt.superclass.name, 'Superclass must be a class');
+      }
+    }
+
     this.environment.define(stmt.name.lexeme, null);
+
+    if (stmt.superclass) {
+      this.environment = new Environment(this.environment);
+      this.environment.define('super', superclass);
+    }
 
     const methods: Map<string, LoxFunction> = new Map();
     for (const method of stmt.methods) {
@@ -66,7 +79,11 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
       methods.set(method.name.lexeme, fun);
     }
 
-    const klass = new LoxClass(stmt.name.lexeme, methods);
+    const klass = new LoxClass(stmt.name.lexeme, superclass, methods);
+
+    if (stmt.superclass) {
+      this.environment = this.environment.enclosing as Environment;
+    }
 
     this.environment.assign(stmt.name, klass);
   }
@@ -123,11 +140,32 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // Expressions
   // -----------
 
-  visitThisExpr(expr: Expr.This): void {
+  visitSuperExpr(expr: Expr.Super): any {
+    const distance = this.locals.get(expr);
+    
+    if (distance === undefined) {
+      throw new RuntimeError(
+        expr.keyword,
+        "Could not get the distance to the environment where super it's declared",
+      );
+    }
+
+    const superclass = this.environment.getAt(distance, 'super') as LoxClass;
+    const object = this.environment.getAt(distance - 1, 'this') as LoxInstance;
+    const method = superclass.findMethod(expr.method.lexeme);
+
+    if (!method) {
+      throw new RuntimeError(expr.method, `Undefined property ${expr.method.lexeme} on superclass`);
+    }
+
+    return method.bind(object);
+  }
+
+  visitThisExpr(expr: Expr.This): any {
     return this.lookupVariable(expr.keyword, expr);
   }
 
-  visitSetExpr(expr: Expr.Set): void {
+  visitSetExpr(expr: Expr.Set): any {
     const object = this.evaluate(expr.object);
 
     if (!(object instanceof LoxInstance)) {

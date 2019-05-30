@@ -31,6 +31,15 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     this.declare(stmt.name);
     this.define(stmt.name);
 
+    if (stmt.superclass && stmt.name.lexeme === stmt.superclass.name.lexeme) {
+      Lox.error(stmt.superclass.name, 'A class cannot inherit from itself');
+    }
+
+    if (stmt.superclass) {
+      this.beginScope();
+      this.innerScope().set('super', true);
+    }
+
     this.beginScope();
     this.innerScope().set('this', true);
     for (const method of stmt.methods) {
@@ -41,6 +50,10 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
       this.resolveFunction(method, declaration);
     }
     this.endScope();
+
+    if (stmt.superclass) {
+      this.endScope();
+    }
 
     this.currentClass = enclosingClass;
   }
@@ -103,6 +116,10 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   // -----------
   // Expressions
   // -----------
+
+  visitSuperExpr(expr: Expr.Super): void {
+    this.resolveLocal(expr, expr.keyword);
+  }
 
   visitThisExpr(expr: Expr.This): void {
     if (this.currentClass === 'none') {

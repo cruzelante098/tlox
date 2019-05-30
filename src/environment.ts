@@ -3,7 +3,8 @@ import { Token } from './token';
 
 export class Environment {
   private readonly values: Map<string, any> = new Map();
-  private readonly enclosing: Environment | null;
+  
+  readonly enclosing: Environment | null;
 
   constructor(enclosing?: Environment) {
     this.enclosing = enclosing || null;

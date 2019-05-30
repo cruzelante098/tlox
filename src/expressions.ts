@@ -14,7 +14,7 @@ export namespace Expr {
     visitLiteralExpr(expr: Literal): R;
     visitLogicalExpr(expr: Logical): R;
     visitSetExpr(expr: Set): R;
-    // visitSuperExpr(expr: Super): R;
+    visitSuperExpr(expr: Super): R;
     visitThisExpr(expr: This): R;
     visitUnaryExpr(expr: Unary): R;
     visitVariableExpr(expr: Variable): R;
@@ -116,15 +116,15 @@ export namespace Expr {
     }
   }
 
-  // export class Super extends Expr {
-  //   constructor(public readonly keyword: Token, public readonly method: Token) {
-  //     super();
-  //   }
+  export class Super extends Expr {
+    constructor(public readonly keyword: Token, public readonly method: Token) {
+      super();
+    }
 
-  //   accept<R>(visitor: Visitor<R>): R {
-  //     return visitor.visitSuperExpr(this);
-  //   }
-  // }
+    accept<R>(visitor: Visitor<R>): R {
+      return visitor.visitSuperExpr(this);
+    }
+  }
 
   export class This extends Expr {
     constructor(public readonly keyword: Token) {

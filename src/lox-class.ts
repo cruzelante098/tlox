@@ -6,10 +6,12 @@ import { Interpreter } from './interpreter';
 export class LoxClass implements LoxCallable {
   public readonly name: string;
 
+  private readonly superclass: LoxClass | null;
   private readonly methods: Map<string, LoxFunction>;
 
-  constructor(name: string, methods: Map<string, LoxFunction>) {
+  constructor(name: string, superclass: LoxClass | null, methods: Map<string, LoxFunction>) {
     this.name = name;
+    this.superclass = superclass;
     this.methods = methods;
   }
 
@@ -23,7 +25,13 @@ export class LoxClass implements LoxCallable {
   }
 
   findMethod(name: string): LoxFunction | undefined {
-    return this.methods.get(name);
+    if (this.methods.has(name)) {
+      return this.methods.get(name);
+    } else if (this.superclass) {
+      return this.superclass.findMethod(name);
+    }
+
+    return undefined;
   }
 
   get arity(): number {
