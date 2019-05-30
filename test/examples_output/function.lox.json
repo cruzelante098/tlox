@@ -1,6 +1,6 @@
 {
-    "test_type": "output",
-    "program_output": [
-        "Hi, Dear Reader!"
-    ]
+  "test_type": "output",
+  "program_output": [
+    "Hi, Dear Reader!"
+  ]
 }

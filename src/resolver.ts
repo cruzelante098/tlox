@@ -26,9 +26,12 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     this.declare(stmt.name);
     this.define(stmt.name);
 
+    this.beginScope();
+    this.innerScope().set("this", true);
     for (const method of stmt.methods) {
       this.resolveFunction(method, 'method');
     }
+    this.endScope();
   }
 
   visitExpressionStmt(stmt: Stmt.Expression): void {
@@ -80,6 +83,10 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   // -----------
   // Expressions
   // -----------
+
+  visitThisExpr(expr: Expr.This): void {
+    this.resolveLocal(expr, expr.keyword);
+  }
 
   visitSetExpr(expr: Expr.Set): void {
     this.resolve(expr.value);
@@ -173,7 +180,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     this.currentFunction = enclosingFunction;
   }
 
-  private resolveLocal(expr: Expr.Variable, name: Token): void {
+  private resolveLocal(expr: Expr, name: Token): void {
     for (let i = this.scopes.length - 1; i >= 0; i--) {
       if (this.scopes[i].has(name.lexeme)) {
         return this.interpreter.resolve(expr, this.scopes.length - 1 - i);

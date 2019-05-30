@@ -22,7 +22,7 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   readonly globals: Environment = new Environment();
 
   private environment: Environment = this.globals;
-  
+
   private readonly locals: Map<Expr, number> = new Map();
 
   constructor() {
@@ -120,6 +120,10 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
   // -----------
   // Expressions
   // -----------
+
+  visitThisExpr(expr: Expr.This): void {
+    return this.lookupVariable(expr.keyword, expr);
+  }
 
   visitSetExpr(expr: Expr.Set): void {
     const object = this.evaluate(expr.object);

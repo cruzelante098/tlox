@@ -1,7 +1,7 @@
 {
-    "test_type": "output",
-    "program_output": [
-        "Hey! I'm a class",
-        "I'm a field inside a class"
-    ]
+  "test_type": "output",
+  "program_output": [
+    "Hey! I'm a class",
+    "I'm a field inside a class"
+  ]
 }

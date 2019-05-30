@@ -3,12 +3,21 @@ import { Stmt } from './statements';
 import { Interpreter } from './interpreter';
 import { Environment } from './environment';
 import { Return } from './return';
+import { LoxInstance } from './lox-instance';
 
 export type FunctionType = 'function' | 'method';
 
 export class LoxFunction implements LoxCallable {
-  constructor(private readonly declaration: Stmt.Function, private readonly closure: Environment) {}
-  readonly arity: number = this.declaration.params.length;
+  readonly arity: number;
+
+  private readonly declaration: Stmt.Function;
+  private readonly closure: Environment;
+
+  constructor(declaration: Stmt.Function, closure: Environment) {
+    this.declaration = declaration;
+    this.closure = closure;
+    this.arity = declaration.params.length;
+  }
 
   call(interpreter: Interpreter, args: any[]): any {
     const environment = new Environment(this.closure);
@@ -26,6 +35,12 @@ export class LoxFunction implements LoxCallable {
       }
     }
     return null;
+  }
+
+  bind(instance: LoxInstance): LoxFunction {
+    const environment = new Environment(this.closure);
+    environment.define('this', instance);
+    return new LoxFunction(this.declaration, environment);
   }
 
   toString(): string {

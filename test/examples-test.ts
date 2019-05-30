@@ -9,6 +9,8 @@ import { expect } from 'chai';
 
 import * as Lox from '../src/lox';
 import { execute } from './test-utils';
+import { Token } from '../src/token';
+import { TT } from '../src/token-type';
 
 let hadError = false;
 
@@ -52,7 +54,7 @@ if (hadError) process.exit(1);
 // @ts-ignore
 const examples = exampleFiles.map(file => {
   return {
-    file,
+    filename: file,
     content: fs.readFileSync(path.join(EXAMPLES_DIR + file), 'utf8'),
   };
 });
@@ -69,20 +71,37 @@ for (const file of outputFiles) {
 describe('Examples tests', function() {
   this.timeout(7000);
   for (const example of examples) {
-    it(`${example.file}`, () => {
+    it(`${example.filename}`, () => {
       const source = example.content;
-      const expected = outputs[example.file];
+      const expected = outputs[example.filename];
       const originalLoxError = Lox.error;
 
+      let errorMsg;
+
+      // @ts-ignore
+      Lox.error = (obj, message) => {
+        if (obj instanceof Token) {
+          const { type, line, lexeme } = obj as Token;
+          if (type == TT.EOF) {
+            errorMsg = `Error at the end: ${message} (at line ${line})`;
+          } else {
+            errorMsg = `Error at '${lexeme}': ${message} (at line ${line})`;
+          }
+        } else if (typeof obj === 'number') {
+          errorMsg = `Error when scanning: ${message} (at line ${obj})`;
+        }
+        Lox.setError(true);
+      }; // stub
+
       if (expected.test_type === 'output') {
-        expect(execute(source)).to.be.deep.equal(expected.program_output);
+        expect(execute(source), errorMsg).to.be.deep.equal(expected.program_output);
       } else {
-        // @ts-ignore
-        Lox.error = () => Lox.setError(true); // stub
         try {
           execute(source);
         } finally {
-          expect(Lox.getError()).to.be.equal(expected.test_type === 'throws' ? true : false);
+          expect(Lox.getError(), errorMsg).to.be.equal(
+            expected.test_type === 'throws' ? true : false,
+          );
           // @ts-ignore
           Lox.error = originalLoxError;
           // @ts-ignore
