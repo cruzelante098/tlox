@@ -1,0 +1,26 @@
+class Person {
+  sayName() {
+    print this.name;
+  }
+}
+
+let jane = Person();
+jane.name = "Jane";
+
+let method = jane.sayName;
+method(); # ?
+
+class Person {
+  sayName() {
+    print this.name;
+  }
+}
+
+let jane = Person();
+jane.name = "Jane";
+
+let bill = Person();
+bill.name = "Bill";
+
+bill.sayName = jane.sayName;
+bill.sayName(); # ?

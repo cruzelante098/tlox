@@ -15,7 +15,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
 
   constructor(interpreter: Interpreter) {
     this.interpreter = interpreter;
-    this.scopes.push({}); // global scope
+    this.scopes.push(Object.create(null)); // global scope
   }
 
   // ----------
@@ -208,7 +208,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   }
 
   private beginScope(): void {
-    this.scopes.push({});
+    this.scopes.push(Object.create(null));
   }
 
   private endScope(): void {

@@ -14,7 +14,7 @@
             "smartStep": true,
             "internalConsoleOptions": "openOnSessionStart",
             "outFiles": ["${workspaceFolder}/lib/*.js"],
-            "args": ["${workspaceFolder}/examples/fail.lox"],
+            "args": ["${workspaceFolder}/examples/class.lox"],
             "console": "internalConsole",
         },
         {

@@ -1,11 +1,11 @@
 class Class {
-  to_s() {
+  toString() {
     return "Hey! I'm a class";
   }
 }
 
 let instance = Class();
-print instance.to_s();
+print instance.toString();
 
 instance.field = "I'm a field inside a class";
 print instance.field;

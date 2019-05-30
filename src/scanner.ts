@@ -29,6 +29,10 @@ export class Scanner {
   private current: number = 0;
   private line: number = 1;
 
+  constructor() {
+    Object.setPrototypeOf(this.keywords, null);
+  }
+
   scan(source: string): Token[] {
     this.source = source;
     while (!this.isAtEnd()) {
@@ -180,8 +184,7 @@ export class Scanner {
       while (this.isDigit(this.peek())) this.advance();
     }
 
-    if (this.isAlpha(this.peek()))
-      Lox.error(this.line, 'Identifiers must not start with numbers');
+    if (this.isAlpha(this.peek())) Lox.error(this.line, 'Identifiers must not start with numbers');
 
     this.addToken(TT.NUMBER, Number(this.source.substring(this.start, this.current)));
   }

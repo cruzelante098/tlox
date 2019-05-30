@@ -4,7 +4,7 @@ import { RuntimeError } from './errors';
 
 export class LoxInstance {
   private readonly klass: LoxClass;
-  private readonly fields: { [key: string]: any } = {};
+  private readonly fields: { [key: string]: any } = Object.create(null);
 
   constructor(klass: LoxClass) {
     this.klass = klass;

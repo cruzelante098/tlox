@@ -2,7 +2,7 @@ import { RuntimeError } from './errors';
 import { Token } from './token';
 
 export class Environment {
-  private readonly values: { [key: string]: any } = {};
+  private readonly values: { [key: string]: any } = Object.create(null);
   private readonly enclosing: Environment | null;
 
   constructor(enclosing?: Environment) {
