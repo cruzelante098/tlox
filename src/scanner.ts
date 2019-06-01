@@ -6,7 +6,7 @@ export class Scanner {
   private source: string = '';
   private tokens: Token[] = [];
 
-  private readonly keywords: { [key: string]: TT } = {
+  static readonly keywords: { [key: string]: TT } = {
     and: TT.AND,
     class: TT.CLASS,
     else: TT.ELSE,
@@ -30,7 +30,7 @@ export class Scanner {
   private line: number = 1;
 
   constructor() {
-    Object.setPrototypeOf(this.keywords, null);
+    Object.setPrototypeOf(Scanner.keywords, null);
   }
 
   scan(source: string): Token[] {
@@ -207,7 +207,7 @@ export class Scanner {
     while (this.isAlphaNumeric(this.peek())) this.advance();
 
     const lexeme = this.source.substring(this.start, this.current);
-    const type: TT = this.keywords[lexeme] || TT.IDENTIFIER;
+    const type: TT = Scanner.keywords[lexeme] || TT.IDENTIFIER;
     this.addToken(type);
   }
 

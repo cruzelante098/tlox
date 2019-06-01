@@ -4,12 +4,13 @@ import chalk from 'chalk';
 import readline from 'readline';
 
 import * as Lox from './lox';
+import { Scanner } from './scanner';
 
 export function initRepl(): void {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-    // completer,
+    completer,
   });
 
   console.log('TLox REPL');
@@ -33,3 +34,9 @@ export function initRepl(): void {
 }
 
 // TODO: Allow REPL to receive unbalanced separators
+
+function completer(line: string): any {
+  const completions = Object.keys(Scanner.keywords);
+  const hits = completions.filter(c => c.startsWith(line));
+  return [hits.length ? hits : completions, line];
+}
