@@ -184,7 +184,7 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   }
 
   visitVariableExpr(expr: Expr.Variable): void {
-    if (this.scopes.length !== 0 && this.innerScope().get(expr.name.lexeme) === false) {
+    if (this.innerScope().get(expr.name.lexeme) === false) {
       Lox.error(expr.name, 'Cannot read local variable in its own initializer');
     }
     this.resolveLocal(expr, expr.name);
@@ -242,18 +242,10 @@ export class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
   }
 
   private define(name: Token): void {
-    if (this.scopes.length === 0) {
-      throw Error("There's nothing in scopes. That shouln't happen.");
-    }
-
     this.innerScope().set(name.lexeme, true);
   }
 
   private declare(name: Token): void {
-    if (this.scopes.length === 0) {
-      throw Error("There's nothing in scopes. That shouln't happen.");
-    }
-
     const scope = this.innerScope();
 
     if (scope.has(name.lexeme)) {
