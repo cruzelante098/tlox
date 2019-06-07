@@ -6,7 +6,7 @@ export class Scanner {
   private source: string = '';
   private tokens: Token[] = [];
 
-  static readonly keywords: { [key: string]: TT } = {
+  static readonly keywords: { [key: string]: TT; } = {
     and: TT.AND,
     class: TT.CLASS,
     else: TT.ELSE,

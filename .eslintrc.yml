@@ -1,14 +1,27 @@
 parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 2019
+  sourceType: module
+  project: ./tsconfig.json
 env:
   es6: true
   node: true
-extends: 
-  - plugin:@typescript-eslint/recommended
+  mocha: true
+extends:
+  - 'eslint:recommended'
+  - 'plugin:@typescript-eslint/recommended'
+  - 'prettier'
+  - 'prettier/@typescript-eslint'
 plugins:
   - '@typescript-eslint'
 rules:
+  # no-extra-parens: off
   no-console: off
-  no-cond-assign: off
+  no-dupe-class-members: off
+  no-inner-declarations: off
+  no-redeclare: off
+  no-constant-condition: off
+  semi: off
   '@typescript-eslint/no-namespace': off
   '@typescript-eslint/no-parameter-properties': off
   '@typescript-eslint/explicit-member-accessibility': off
@@ -17,3 +30,19 @@ rules:
     - 2
   '@typescript-eslint/no-explicit-any': off
   '@typescript-eslint/no-use-before-define': off
+  '@typescript-eslint/member-delimiter-style':
+    - warn
+    - multiline:
+        delimiter: semi
+        requireLast: true
+      singleline:
+        delimiter: semi
+        requireLast: true
+  '@typescript-eslint/interface-name-prefix':
+    - warn
+    - never
+  # '@typescript-eslint/no-extra-parens':
+  #   - warn
+  '@typescript-eslint/semi':
+    - error
+

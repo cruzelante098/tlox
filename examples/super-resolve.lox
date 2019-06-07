@@ -1,0 +1,10 @@
+class A {}
+
+class B < A {
+  toString() {
+    super.thisDoesNotExistOnSuperClass();
+  }
+}
+
+# B().toString(); # this should never be reached since a resolver error would be thrown before
+print "something not working here";
