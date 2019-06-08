@@ -9,4 +9,6 @@ notifications:
     on_failure: change
 
 after_script:
-  - npm install coveralls && npm run coveralls
+  - npm run coverage
+  - npm install coveralls
+  - npm run coveralls
