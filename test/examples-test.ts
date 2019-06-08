@@ -60,7 +60,7 @@ const examples = exampleFiles.map(file => {
 });
 
 const outputs: {
-  [file: string]: { program_output?: []; test_type: 'output' | 'throws' | 'does_not_throw' };
+  [file: string]: any;
 } = Object.create(null);
 
 // @ts-ignore
@@ -104,7 +104,6 @@ describe('Examples tests', function() {
           );
           // @ts-ignore
           Lox.error = originalLoxError;
-          // @ts-ignore
           Lox.setError(false);
         }
       }

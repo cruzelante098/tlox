@@ -142,7 +142,7 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
   visitSuperExpr(expr: Expr.Super): any {
     const distance = this.locals.get(expr);
-    
+
     if (distance === undefined) {
       throw new RuntimeError(
         expr.keyword,
