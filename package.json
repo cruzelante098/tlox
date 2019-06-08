@@ -6,9 +6,9 @@
     "compile": "tsc",
     "compile:watch": "tsc --watch",
     "start": "ts-node src/cli.ts",
-    "test": "mocha -r ts-node/register test/**/*.ts",
-    "test:watch": "mocha -r ts-node/register test/**/*.ts --watch --reporter min",
-    "test:cov": "nyc --reporter=text --reporter=html mocha && start ./coverage/index.html",
+    "test": "mocha",
+    "test:watch": "mocha --watch --reporter min",
+    "test:cov": "nyc --reporter=text --reporter=html mocha & start ./coverage/index.html",
     "coverage": "nyc --reporter=text mocha",
     "lint": "eslint ./src/**/* ./test/**/*.ts --color"
   },
@@ -19,6 +19,19 @@
     "hooks": {
       "pre-push": "env FORCE_COLOR=1 npm run lint && npm test -- --reporter=progress"
     }
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "sourceMap": true,
+    "instrument": true
   },
   "description": "Lox language implementation in Typescript, from http://craftinginterpreters.com",
   "repository": {
@@ -47,6 +60,7 @@
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
     "prettier": "^1.17.1",
+    "source-map-support": "^0.5.12",
     "ts-node": "^8.2.0",
     "typescript": "^3.4.5"
   },

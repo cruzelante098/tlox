@@ -71,6 +71,11 @@ for (const file of outputFiles) {
 describe('Examples tests', function() {
   this.timeout(7000);
   for (const example of examples) {
+    if(outputs[example.filename].skip) {
+      xit(`${example.filename}`);
+      continue;
+    }
+
     it(`${example.filename}`, () => {
       const source = example.content;
       const expected = outputs[example.filename];

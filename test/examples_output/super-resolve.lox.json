@@ -1,3 +1,4 @@
 {
+    "skip": true,
     "test_type": "throws"
 }
