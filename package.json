@@ -10,7 +10,7 @@
     "test:watch": "mocha --watch --reporter min",
     "test:cov": "nyc --reporter=text --reporter=html mocha & start ./coverage/index.html",
     "coverage": "nyc --reporter=text mocha",
-    "coveralls": "nyc report --reporter=text-lcov mocha | coveralls",
+    "coveralls": "npm run coverage && nyc report --reporter=text-lcov mocha | coveralls",
     "lint": "eslint ./src/**/* ./test/**/*.ts --color"
   },
   "bin": {
