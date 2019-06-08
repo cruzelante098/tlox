@@ -105,7 +105,7 @@ export class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     if (this.isTruthy(this.evaluate(stmt.condition))) {
       this.execute(stmt.thenBranch);
     } else if (stmt.elseBranch) {
-      this.execute(stmt.thenBranch);
+      this.execute(stmt.elseBranch);
     }
   }
 
